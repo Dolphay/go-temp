@@ -1,4 +1,4 @@
-module maunium.net/go/mautrix
+module github.com/Dolphay/go-temp
 
 go 1.20
 
