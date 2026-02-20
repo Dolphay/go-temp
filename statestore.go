@@ -4,13 +4,13 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-package mautrix
+package mautrix_tmp
 
 import (
 	"sync"
 
-	"maunium.net/go/mautrix/event"
-	"maunium.net/go/mautrix/id"
+	"github.com/Dolphay/mautrix_tmp/event"
+	"github.com/Dolphay/mautrix_tmp/id"
 )
 
 // StateStore is an interface for storing basic room state information.
@@ -53,7 +53,7 @@ func UpdateStateStore(store StateStore, evt *event.Event) {
 
 // StateStoreSyncHandler can be added as an event handler in the syncer to update the state store automatically.
 //
-//	client.Syncer.(mautrix.ExtensibleSyncer).OnEvent(client.StateStoreSyncHandler)
+//	client.Syncer.(mautrix_tmp.ExtensibleSyncer).OnEvent(client.StateStoreSyncHandler)
 //
 // DefaultSyncer.ParseEventContent must also be true for this to work (which it is by default).
 func (cli *Client) StateStoreSyncHandler(_ EventSource, evt *event.Event) {

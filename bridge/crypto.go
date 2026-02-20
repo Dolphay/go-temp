@@ -20,13 +20,13 @@ import (
 	"github.com/rs/zerolog"
 	"go.mau.fi/util/dbutil"
 
-	"maunium.net/go/mautrix"
-	"maunium.net/go/mautrix/bridge/bridgeconfig"
-	"maunium.net/go/mautrix/crypto"
-	"maunium.net/go/mautrix/crypto/olm"
-	"maunium.net/go/mautrix/event"
-	"maunium.net/go/mautrix/id"
-	"maunium.net/go/mautrix/sqlstatestore"
+	"github.com/Dolphay/mautrix_tmp"
+	"github.com/Dolphay/mautrix_tmp/bridge/bridgeconfig"
+	"github.com/Dolphay/mautrix_tmp/crypto"
+	"github.com/Dolphay/mautrix_tmp/crypto/olm"
+	"github.com/Dolphay/mautrix_tmp/event"
+	"github.com/Dolphay/mautrix_tmp/id"
+	"github.com/Dolphay/mautrix_tmp/sqlstatestore"
 )
 
 var _ crypto.StateStore = (*sqlstatestore.SQLStateStore)(nil)
@@ -37,7 +37,7 @@ var UnknownMessageIndex = olm.UnknownMessageIndex
 
 type CryptoHelper struct {
 	bridge *Bridge
-	client *mautrix.Client
+	client *mautrix_tmp.Client
 	mach   *crypto.OlmMachine
 	store  *SQLCryptoStore
 	log    *zerolog.Logger
@@ -222,7 +222,7 @@ func (helper *CryptoHelper) allowKeyShare(ctx context.Context, device *id.Device
 	}
 }
 
-func (helper *CryptoHelper) loginBot() (*mautrix.Client, bool, error) {
+func (helper *CryptoHelper) loginBot() (*mautrix_tmp.Client, bool, error) {
 	deviceID := helper.store.FindDeviceID()
 	if len(deviceID) > 0 {
 		helper.log.Debug().Str("device_id", deviceID.String()).Msg("Found existing device ID for bot in database")
@@ -245,13 +245,13 @@ func (helper *CryptoHelper) loginBot() (*mautrix.Client, bool, error) {
 	flows, err := client.GetLoginFlows()
 	if err != nil {
 		return nil, deviceID != "", fmt.Errorf("failed to get supported login flows: %w", err)
-	} else if !flows.HasFlow(mautrix.AuthTypeAppservice) {
+	} else if !flows.HasFlow(mautrix_tmp.AuthTypeAppservice) {
 		return nil, deviceID != "", fmt.Errorf("homeserver does not support appservice login")
 	}
-	resp, err := client.Login(&mautrix.ReqLogin{
-		Type: mautrix.AuthTypeAppservice,
-		Identifier: mautrix.UserIdentifier{
-			Type: mautrix.IdentifierTypeUser,
+	resp, err := client.Login(&mautrix_tmp.ReqLogin{
+		Type: mautrix_tmp.AuthTypeAppservice,
+		Identifier: mautrix_tmp.UserIdentifier{
+			Type: mautrix_tmp.IdentifierTypeUser,
 			User: string(helper.bridge.AS.BotMXID()),
 		},
 		DeviceID:         deviceID,
@@ -268,8 +268,8 @@ func (helper *CryptoHelper) loginBot() (*mautrix.Client, bool, error) {
 
 func (helper *CryptoHelper) verifyKeysAreOnServer() {
 	helper.log.Debug().Msg("Making sure keys are still on server")
-	resp, err := helper.client.QueryKeys(&mautrix.ReqQueryKeys{
-		DeviceKeys: map[id.UserID]mautrix.DeviceIDList{
+	resp, err := helper.client.QueryKeys(&mautrix_tmp.ReqQueryKeys{
+		DeviceKeys: map[id.UserID]mautrix_tmp.DeviceIDList{
 			helper.client.UserID: {helper.client.DeviceID},
 		},
 	})
@@ -363,7 +363,7 @@ func (helper *CryptoHelper) Reset(startAfterReset bool) {
 	}
 }
 
-func (helper *CryptoHelper) Client() *mautrix.Client {
+func (helper *CryptoHelper) Client() *mautrix_tmp.Client {
 	return helper.client
 }
 
@@ -457,7 +457,7 @@ type cryptoSyncer struct {
 	*crypto.OlmMachine
 }
 
-func (syncer *cryptoSyncer) ProcessResponse(resp *mautrix.RespSync, since string) error {
+func (syncer *cryptoSyncer) ProcessResponse(resp *mautrix_tmp.RespSync, since string) error {
 	done := make(chan struct{})
 	go func() {
 		defer func() {
@@ -482,25 +482,25 @@ func (syncer *cryptoSyncer) ProcessResponse(resp *mautrix.RespSync, since string
 	return nil
 }
 
-func (syncer *cryptoSyncer) OnFailedSync(_ *mautrix.RespSync, err error) (time.Duration, error) {
-	if errors.Is(err, mautrix.MUnknownToken) {
+func (syncer *cryptoSyncer) OnFailedSync(_ *mautrix_tmp.RespSync, err error) (time.Duration, error) {
+	if errors.Is(err, mautrix_tmp.MUnknownToken) {
 		return 0, err
 	}
 	syncer.Log.Error().Err(err).Msg("Error /syncing, waiting 10 seconds")
 	return 10 * time.Second, nil
 }
 
-func (syncer *cryptoSyncer) GetFilterJSON(_ id.UserID) *mautrix.Filter {
+func (syncer *cryptoSyncer) GetFilterJSON(_ id.UserID) *mautrix_tmp.Filter {
 	everything := []event.Type{{Type: "*"}}
-	return &mautrix.Filter{
-		Presence:    mautrix.FilterPart{NotTypes: everything},
-		AccountData: mautrix.FilterPart{NotTypes: everything},
-		Room: mautrix.RoomFilter{
+	return &mautrix_tmp.Filter{
+		Presence:    mautrix_tmp.FilterPart{NotTypes: everything},
+		AccountData: mautrix_tmp.FilterPart{NotTypes: everything},
+		Room: mautrix_tmp.RoomFilter{
 			IncludeLeave: false,
-			Ephemeral:    mautrix.FilterPart{NotTypes: everything},
-			AccountData:  mautrix.FilterPart{NotTypes: everything},
-			State:        mautrix.FilterPart{NotTypes: everything},
-			Timeline:     mautrix.FilterPart{NotTypes: everything},
+			Ephemeral:    mautrix_tmp.FilterPart{NotTypes: everything},
+			AccountData:  mautrix_tmp.FilterPart{NotTypes: everything},
+			State:        mautrix_tmp.FilterPart{NotTypes: everything},
+			Timeline:     mautrix_tmp.FilterPart{NotTypes: everything},
 		},
 	}
 }

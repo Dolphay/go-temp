@@ -16,9 +16,9 @@ import (
 
 	"github.com/rs/zerolog"
 
-	"maunium.net/go/mautrix"
-	"maunium.net/go/mautrix/appservice"
-	"maunium.net/go/mautrix/id"
+	"github.com/Dolphay/mautrix_tmp"
+	"github.com/Dolphay/mautrix_tmp/appservice"
+	"github.com/Dolphay/mautrix_tmp/id"
 )
 
 type doublePuppetUtil struct {
@@ -26,7 +26,7 @@ type doublePuppetUtil struct {
 	log zerolog.Logger
 }
 
-func (dp *doublePuppetUtil) newClient(mxid id.UserID, accessToken string) (*mautrix.Client, error) {
+func (dp *doublePuppetUtil) newClient(mxid id.UserID, accessToken string) (*mautrix_tmp.Client, error) {
 	_, homeserver, err := mxid.Parse()
 	if err != nil {
 		return nil, err
@@ -36,7 +36,7 @@ func (dp *doublePuppetUtil) newClient(mxid id.UserID, accessToken string) (*maut
 		if homeserver == dp.br.AS.HomeserverDomain {
 			homeserverURL = ""
 		} else if dp.br.Config.Bridge.GetDoublePuppetConfig().AllowDiscovery {
-			resp, err := mautrix.DiscoverClientAPI(homeserver)
+			resp, err := mautrix_tmp.DiscoverClientAPI(homeserver)
 			if err != nil {
 				return nil, fmt.Errorf("failed to find homeserver URL for %s: %v", homeserver, err)
 			}
@@ -74,14 +74,14 @@ func (dp *doublePuppetUtil) autoLogin(mxid id.UserID, loginSecret string) (strin
 		return "", fmt.Errorf("failed to create mautrix client to log in: %v", err)
 	}
 	bridgeName := fmt.Sprintf("%s Bridge", dp.br.ProtocolName)
-	req := mautrix.ReqLogin{
-		Identifier:               mautrix.UserIdentifier{Type: mautrix.IdentifierTypeUser, User: string(mxid)},
+	req := mautrix_tmp.ReqLogin{
+		Identifier:               mautrix_tmp.UserIdentifier{Type: mautrix_tmp.IdentifierTypeUser, User: string(mxid)},
 		DeviceID:                 id.DeviceID(bridgeName),
 		InitialDeviceDisplayName: bridgeName,
 	}
 	if loginSecret == "appservice" {
 		client.AccessToken = dp.br.AS.Registration.AppToken
-		req.Type = mautrix.AuthTypeAppservice
+		req.Type = mautrix_tmp.AuthTypeAppservice
 	} else {
 		loginFlows, err := client.GetLoginFlows()
 		if err != nil {
@@ -91,11 +91,11 @@ func (dp *doublePuppetUtil) autoLogin(mxid id.UserID, loginSecret string) (strin
 		mac.Write([]byte(mxid))
 		token := hex.EncodeToString(mac.Sum(nil))
 		switch {
-		case loginFlows.HasFlow(mautrix.AuthTypeDevtureSharedSecret):
-			req.Type = mautrix.AuthTypeDevtureSharedSecret
+		case loginFlows.HasFlow(mautrix_tmp.AuthTypeDevtureSharedSecret):
+			req.Type = mautrix_tmp.AuthTypeDevtureSharedSecret
 			req.Token = token
-		case loginFlows.HasFlow(mautrix.AuthTypePassword):
-			req.Type = mautrix.AuthTypePassword
+		case loginFlows.HasFlow(mautrix_tmp.AuthTypePassword):
+			req.Type = mautrix_tmp.AuthTypePassword
 			req.Password = token
 		default:
 			return "", fmt.Errorf("no supported auth types for shared secret auth found")
@@ -132,7 +132,7 @@ func (dp *doublePuppetUtil) Setup(mxid id.UserID, savedAccessToken string, relog
 		}
 		intent.SetAppServiceUserID = true
 		if savedAccessToken != useConfigASToken {
-			var resp *mautrix.RespWhoami
+			var resp *mautrix_tmp.RespWhoami
 			resp, err = intent.Whoami()
 			if err == nil && resp.UserID != mxid {
 				err = ErrMismatchingMXID
@@ -154,10 +154,10 @@ func (dp *doublePuppetUtil) Setup(mxid id.UserID, savedAccessToken string, relog
 	if err != nil {
 		return
 	}
-	var resp *mautrix.RespWhoami
+	var resp *mautrix_tmp.RespWhoami
 	resp, err = intent.Whoami()
 	if err != nil {
-		if reloginOnFail && hasSecret && errors.Is(err, mautrix.MUnknownToken) {
+		if reloginOnFail && hasSecret && errors.Is(err, mautrix_tmp.MUnknownToken) {
 			intent.AccessToken, err = dp.autoLogin(mxid, loginSecret)
 			if err == nil {
 				newAccessToken = intent.AccessToken

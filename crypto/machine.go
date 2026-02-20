@@ -15,16 +15,16 @@ import (
 
 	"github.com/rs/zerolog"
 
-	"maunium.net/go/mautrix/crypto/ssss"
-	"maunium.net/go/mautrix/id"
+	"github.com/Dolphay/mautrix_tmp/crypto/ssss"
+	"github.com/Dolphay/mautrix_tmp/id"
 
-	"maunium.net/go/mautrix"
-	"maunium.net/go/mautrix/event"
+	"github.com/Dolphay/mautrix_tmp"
+	"github.com/Dolphay/mautrix_tmp/event"
 )
 
 // OlmMachine is the main struct for handling Matrix end-to-end encryption.
 type OlmMachine struct {
-	Client *mautrix.Client
+	Client *mautrix_tmp.Client
 	SSSS   *ssss.Machine
 	Log    *zerolog.Logger
 
@@ -88,7 +88,7 @@ type StateStore interface {
 }
 
 // NewOlmMachine creates an OlmMachine with the given client, logger and stores.
-func NewOlmMachine(client *mautrix.Client, log *zerolog.Logger, cryptoStore Store, stateStore StateStore) *OlmMachine {
+func NewOlmMachine(client *mautrix_tmp.Client, log *zerolog.Logger, cryptoStore Store, stateStore StateStore) *OlmMachine {
 	if log == nil {
 		logPtr := zerolog.Nop()
 		log = &logPtr
@@ -195,8 +195,8 @@ func (mach *OlmMachine) OwnIdentity() *id.Device {
 
 type asEventProcessor interface {
 	On(evtType event.Type, handler func(evt *event.Event))
-	OnOTK(func(otk *mautrix.OTKCount))
-	OnDeviceList(func(lists *mautrix.DeviceLists, since string))
+	OnOTK(func(otk *mautrix_tmp.OTKCount))
+	OnDeviceList(func(lists *mautrix_tmp.DeviceLists, since string))
 }
 
 func (mach *OlmMachine) AddAppserviceListener(ep asEventProcessor) {
@@ -217,7 +217,7 @@ func (mach *OlmMachine) AddAppserviceListener(ep asEventProcessor) {
 	mach.Log.Debug().Msg("Added listeners for encryption data coming from appservice transactions")
 }
 
-func (mach *OlmMachine) HandleDeviceLists(dl *mautrix.DeviceLists, since string) {
+func (mach *OlmMachine) HandleDeviceLists(dl *mautrix_tmp.DeviceLists, since string) {
 	if len(dl.Changed) > 0 {
 		traceID := time.Now().Format("15:04:05.000000")
 		mach.Log.Debug().
@@ -229,7 +229,7 @@ func (mach *OlmMachine) HandleDeviceLists(dl *mautrix.DeviceLists, since string)
 	}
 }
 
-func (mach *OlmMachine) HandleOTKCounts(otkCount *mautrix.OTKCount) {
+func (mach *OlmMachine) HandleOTKCounts(otkCount *mautrix_tmp.OTKCount) {
 	if (len(otkCount.UserID) > 0 && otkCount.UserID != mach.Client.UserID) || (len(otkCount.DeviceID) > 0 && otkCount.DeviceID != mach.Client.DeviceID) {
 		// TODO This log probably needs to be silence-able if someone wants to use encrypted appservices with multiple e2ee sessions
 		mach.Log.Warn().
@@ -260,8 +260,8 @@ func (mach *OlmMachine) HandleOTKCounts(otkCount *mautrix.OTKCount) {
 //
 // This can be easily registered into a mautrix client using .OnSync():
 //
-//	client.Syncer.(mautrix.ExtensibleSyncer).OnSync(c.crypto.ProcessSyncResponse)
-func (mach *OlmMachine) ProcessSyncResponse(resp *mautrix.RespSync, since string) bool {
+//	client.Syncer.(mautrix_tmp.ExtensibleSyncer).OnSync(c.crypto.ProcessSyncResponse)
+func (mach *OlmMachine) ProcessSyncResponse(resp *mautrix_tmp.RespSync, since string) bool {
 	mach.HandleDeviceLists(&resp.DeviceLists, since)
 
 	for _, evt := range resp.ToDevice.Events {
@@ -282,8 +282,8 @@ func (mach *OlmMachine) ProcessSyncResponse(resp *mautrix.RespSync, since string
 //
 // Currently this is not automatically called, so you must add a listener yourself:
 //
-//	client.Syncer.(mautrix.ExtensibleSyncer).OnEventType(event.StateMember, c.crypto.HandleMemberEvent)
-func (mach *OlmMachine) HandleMemberEvent(_ mautrix.EventSource, evt *event.Event) {
+//	client.Syncer.(mautrix_tmp.ExtensibleSyncer).OnEventType(event.StateMember, c.crypto.HandleMemberEvent)
+func (mach *OlmMachine) HandleMemberEvent(_ mautrix_tmp.EventSource, evt *event.Event) {
 	if !mach.StateStore.IsEncrypted(evt.RoomID) {
 		return
 	}
@@ -474,7 +474,7 @@ func (mach *OlmMachine) SendEncryptedToDevice(ctx context.Context, device *id.De
 		Str("olm_session_id", olmSess.ID().String()).
 		Msg("Sending encrypted to-device event")
 	_, err = mach.Client.SendToDevice(event.ToDeviceEncrypted,
-		&mautrix.ReqSendToDevice{
+		&mautrix_tmp.ReqSendToDevice{
 			Messages: map[id.UserID]map[id.DeviceID]*event.Content{
 				device.UserID: {
 					device.DeviceID: encryptedContent,
@@ -624,7 +624,7 @@ func (mach *OlmMachine) ShareKeys(ctx context.Context, currentOTKCount int) erro
 	defer mach.otkUploadLock.Unlock()
 	if mach.lastOTKUpload.Add(1*time.Minute).After(start) || currentOTKCount < 0 {
 		log.Debug().Msg("Checking OTK count from server due to suspiciously close share keys requests or negative OTK count")
-		resp, err := mach.Client.UploadKeys(&mautrix.ReqUploadKeys{})
+		resp, err := mach.Client.UploadKeys(&mautrix_tmp.ReqUploadKeys{})
 		if err != nil {
 			return fmt.Errorf("failed to check current OTK counts: %w", err)
 		}
@@ -634,7 +634,7 @@ func (mach *OlmMachine) ShareKeys(ctx context.Context, currentOTKCount int) erro
 			Msg("Fetched current OTK count from server")
 		currentOTKCount = resp.OneTimeKeyCounts.SignedCurve25519
 	}
-	var deviceKeys *mautrix.DeviceKeys
+	var deviceKeys *mautrix_tmp.DeviceKeys
 	if !mach.account.Shared {
 		deviceKeys = mach.account.getInitialKeys(mach.Client.UserID, mach.Client.DeviceID)
 		log.Debug().Msg("Going to upload initial account keys")
@@ -644,7 +644,7 @@ func (mach *OlmMachine) ShareKeys(ctx context.Context, currentOTKCount int) erro
 		log.Debug().Msg("No one-time keys nor device keys got when trying to share keys")
 		return nil
 	}
-	req := &mautrix.ReqUploadKeys{
+	req := &mautrix_tmp.ReqUploadKeys{
 		DeviceKeys:  deviceKeys,
 		OneTimeKeys: oneTimeKeys,
 	}

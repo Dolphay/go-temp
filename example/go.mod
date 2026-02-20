@@ -1,4 +1,4 @@
-module maunium.net/go/mautrix/example
+module github.com/Dolphay/mautrix_tmp/example
 
 go 1.19
 

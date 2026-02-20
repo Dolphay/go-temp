@@ -20,9 +20,9 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/rs/zerolog"
 
-	"maunium.net/go/mautrix"
-	"maunium.net/go/mautrix/event"
-	"maunium.net/go/mautrix/id"
+	"github.com/Dolphay/mautrix_tmp"
+	"github.com/Dolphay/mautrix_tmp/event"
+	"github.com/Dolphay/mautrix_tmp/id"
 )
 
 // Start starts the HTTP server that listens for calls from the Matrix homeserver.
@@ -204,7 +204,7 @@ func (as *AppService) handleOTKCounts(ctx context.Context, otks OTKCountMap) {
 	}
 }
 
-func (as *AppService) handleDeviceLists(ctx context.Context, dl *mautrix.DeviceLists) {
+func (as *AppService) handleDeviceLists(ctx context.Context, dl *mautrix_tmp.DeviceLists) {
 	select {
 	case as.DeviceLists <- dl:
 	default:
@@ -215,7 +215,7 @@ func (as *AppService) handleDeviceLists(ctx context.Context, dl *mautrix.DeviceL
 func (as *AppService) handleEvents(ctx context.Context, evts []*event.Event, defaultTypeClass event.TypeClass) {
 	log := zerolog.Ctx(ctx)
 	for _, evt := range evts {
-		evt.Mautrix.ReceivedAt = time.Now()
+		evt.mautrix_tmp.ReceivedAt = time.Now()
 		if defaultTypeClass != event.UnknownEventType {
 			evt.Type.Class = defaultTypeClass
 		} else if evt.StateKey != nil {
@@ -235,7 +235,7 @@ func (as *AppService) handleEvents(ctx context.Context, evts []*event.Event, def
 		}
 
 		if evt.Type.IsState() {
-			mautrix.UpdateStateStore(as.StateStore, evt)
+			mautrix_tmp.UpdateStateStore(as.StateStore, evt)
 		}
 		var ch chan *event.Event
 		if evt.Type.Class == event.ToDeviceEventType {
@@ -308,7 +308,7 @@ func (as *AppService) PostPing(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var txn mautrix.ReqAppservicePing
+	var txn mautrix_tmp.ReqAppservicePing
 	_ = json.Unmarshal(body, &txn)
 	as.Log.Debug().Str("txn_id", txn.TxnID).Msg("Received ping from homeserver")
 

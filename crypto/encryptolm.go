@@ -11,10 +11,10 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"maunium.net/go/mautrix"
-	"maunium.net/go/mautrix/crypto/olm"
-	"maunium.net/go/mautrix/event"
-	"maunium.net/go/mautrix/id"
+	"github.com/Dolphay/mautrix_tmp"
+	"github.com/Dolphay/mautrix_tmp/crypto/olm"
+	"github.com/Dolphay/mautrix_tmp/event"
+	"github.com/Dolphay/mautrix_tmp/id"
 )
 
 func (mach *OlmMachine) encryptOlmEvent(ctx context.Context, session *OlmSession, recipient *id.Device, evtType event.Type, content event.Content) *event.EncryptedEventContent {
@@ -68,7 +68,7 @@ func (mach *OlmMachine) shouldCreateNewSession(identityKey id.IdentityKey) bool 
 }
 
 func (mach *OlmMachine) createOutboundSessions(ctx context.Context, input map[id.UserID]map[id.DeviceID]*id.Device) error {
-	request := make(mautrix.OneTimeKeysRequest)
+	request := make(mautrix_tmp.OneTimeKeysRequest)
 	for userID, devices := range input {
 		request[userID] = make(map[id.DeviceID]id.KeyAlgorithm)
 		for deviceID, identity := range devices {
@@ -83,7 +83,7 @@ func (mach *OlmMachine) createOutboundSessions(ctx context.Context, input map[id
 	if len(request) == 0 {
 		return nil
 	}
-	resp, err := mach.Client.ClaimKeys(&mautrix.ReqClaimKeys{
+	resp, err := mach.Client.ClaimKeys(&mautrix_tmp.ReqClaimKeys{
 		OneTimeKeys: request,
 		Timeout:     10 * 1000,
 	})
@@ -93,7 +93,7 @@ func (mach *OlmMachine) createOutboundSessions(ctx context.Context, input map[id
 	log := mach.machOrContextLog(ctx)
 	for userID, user := range resp.OneTimeKeys {
 		for deviceID, oneTimeKeys := range user {
-			var oneTimeKey mautrix.OneTimeKey
+			var oneTimeKey mautrix_tmp.OneTimeKey
 			var keyID id.KeyID
 			for keyID, oneTimeKey = range oneTimeKeys {
 				break

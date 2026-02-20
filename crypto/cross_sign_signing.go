@@ -11,10 +11,10 @@ import (
 	"errors"
 	"fmt"
 
-	"maunium.net/go/mautrix"
-	"maunium.net/go/mautrix/crypto/olm"
-	"maunium.net/go/mautrix/event"
-	"maunium.net/go/mautrix/id"
+	"github.com/Dolphay/mautrix_tmp"
+	"github.com/Dolphay/mautrix_tmp/crypto/olm"
+	"github.com/Dolphay/mautrix_tmp/event"
+	"github.com/Dolphay/mautrix_tmp/id"
 )
 
 var (
@@ -66,7 +66,7 @@ func (mach *OlmMachine) SignUser(userID id.UserID, masterKey id.Ed25519) error {
 		return ErrUserSigningKeyNotCached
 	}
 
-	masterKeyObj := mautrix.ReqKeysSignatures{
+	masterKeyObj := mautrix_tmp.ReqKeysSignatures{
 		UserID: userID,
 		Usage:  []id.CrossSigningUsage{id.XSUsageMaster},
 		Keys: map[id.KeyID]string{
@@ -103,7 +103,7 @@ func (mach *OlmMachine) SignOwnMasterKey() error {
 	deviceID := mach.Client.DeviceID
 	masterKey := mach.CrossSigningKeys.MasterKey.PublicKey
 
-	masterKeyObj := mautrix.ReqKeysSignatures{
+	masterKeyObj := mautrix_tmp.ReqKeysSignatures{
 		UserID: userID,
 		Usage:  []id.CrossSigningUsage{id.XSUsageMaster},
 		Keys: map[id.KeyID]string{
@@ -114,7 +114,7 @@ func (mach *OlmMachine) SignOwnMasterKey() error {
 	if err != nil {
 		return fmt.Errorf("failed to sign JSON: %w", err)
 	}
-	masterKeyObj.Signatures = mautrix.Signatures{
+	masterKeyObj.Signatures = mautrix_tmp.Signatures{
 		userID: map[id.KeyID]string{
 			id.NewKeyID(id.KeyAlgorithmEd25519, deviceID.String()): signature,
 		},
@@ -124,8 +124,8 @@ func (mach *OlmMachine) SignOwnMasterKey() error {
 		Str("signature", signature).
 		Msg("Signed own master key with own device key")
 
-	resp, err := mach.Client.UploadSignatures(&mautrix.ReqUploadSignatures{
-		userID: map[string]mautrix.ReqKeysSignatures{
+	resp, err := mach.Client.UploadSignatures(&mautrix_tmp.ReqUploadSignatures{
+		userID: map[string]mautrix_tmp.ReqKeysSignatures{
 			masterKey.String(): masterKeyObj,
 		},
 	})
@@ -156,7 +156,7 @@ func (mach *OlmMachine) SignOwnDevice(device *id.Device) error {
 		return err
 	}
 
-	deviceKeyObj := mautrix.ReqKeysSignatures{
+	deviceKeyObj := mautrix_tmp.ReqKeysSignatures{
 		UserID:     device.UserID,
 		DeviceID:   device.DeviceID,
 		Algorithms: deviceKeys.Algorithms,
@@ -186,10 +186,10 @@ func (mach *OlmMachine) SignOwnDevice(device *id.Device) error {
 
 // getFullDeviceKeys gets the full device keys object for the given device.
 // This is used because we don't cache some of the details like list of algorithms and unsupported key types.
-func (mach *OlmMachine) getFullDeviceKeys(device *id.Device) (*mautrix.DeviceKeys, error) {
-	devicesKeys, err := mach.Client.QueryKeys(&mautrix.ReqQueryKeys{
-		DeviceKeys: mautrix.DeviceKeysRequest{
-			device.UserID: mautrix.DeviceIDList{device.DeviceID},
+func (mach *OlmMachine) getFullDeviceKeys(device *id.Device) (*mautrix_tmp.DeviceKeys, error) {
+	devicesKeys, err := mach.Client.QueryKeys(&mautrix_tmp.ReqQueryKeys{
+		DeviceKeys: mautrix_tmp.DeviceKeysRequest{
+			device.UserID: mautrix_tmp.DeviceIDList{device.DeviceID},
 		},
 	})
 	if err != nil {
@@ -208,19 +208,19 @@ func (mach *OlmMachine) getFullDeviceKeys(device *id.Device) (*mautrix.DeviceKey
 }
 
 // signAndUpload signs the given key signatures object and uploads it to the server.
-func (mach *OlmMachine) signAndUpload(req mautrix.ReqKeysSignatures, userID id.UserID, signedThing string, key *olm.PkSigning) (string, error) {
+func (mach *OlmMachine) signAndUpload(req mautrix_tmp.ReqKeysSignatures, userID id.UserID, signedThing string, key *olm.PkSigning) (string, error) {
 	signature, err := key.SignJSON(req)
 	if err != nil {
 		return "", fmt.Errorf("failed to sign JSON: %w", err)
 	}
-	req.Signatures = mautrix.Signatures{
+	req.Signatures = mautrix_tmp.Signatures{
 		mach.Client.UserID: map[id.KeyID]string{
 			id.NewKeyID(id.KeyAlgorithmEd25519, key.PublicKey.String()): signature,
 		},
 	}
 
-	resp, err := mach.Client.UploadSignatures(&mautrix.ReqUploadSignatures{
-		userID: map[string]mautrix.ReqKeysSignatures{
+	resp, err := mach.Client.UploadSignatures(&mautrix_tmp.ReqUploadSignatures{
+		userID: map[string]mautrix_tmp.ReqKeysSignatures{
 			signedThing: req,
 		},
 	})

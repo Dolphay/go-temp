@@ -18,11 +18,11 @@ import (
 	"sync"
 	"time"
 
-	"maunium.net/go/mautrix"
-	"maunium.net/go/mautrix/crypto/canonicaljson"
-	"maunium.net/go/mautrix/crypto/olm"
-	"maunium.net/go/mautrix/event"
-	"maunium.net/go/mautrix/id"
+	"github.com/Dolphay/mautrix_tmp"
+	"github.com/Dolphay/mautrix_tmp/crypto/canonicaljson"
+	"github.com/Dolphay/mautrix_tmp/crypto/olm"
+	"github.com/Dolphay/mautrix_tmp/event"
+	"github.com/Dolphay/mautrix_tmp/id"
 )
 
 var (
@@ -55,7 +55,7 @@ const (
 
 // sendToOneDevice sends a to-device event to a single device.
 func (mach *OlmMachine) sendToOneDevice(userID id.UserID, deviceID id.DeviceID, eventType event.Type, content interface{}) error {
-	_, err := mach.Client.SendToDevice(eventType, &mautrix.ReqSendToDevice{
+	_, err := mach.Client.SendToDevice(eventType, &mautrix_tmp.ReqSendToDevice{
 		Messages: map[id.UserID]map[id.DeviceID]*event.Content{
 			userID: {
 				deviceID: {

@@ -19,7 +19,7 @@ import (
 	"encoding/base64"
 	"unsafe"
 
-	"maunium.net/go/mautrix/id"
+	"github.com/Dolphay/mautrix_tmp/id"
 )
 
 // Session stores an end to end encrypted messaging session.

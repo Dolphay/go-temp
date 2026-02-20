@@ -4,7 +4,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-package mautrix
+package mautrix_tmp
 
 import (
 	"errors"
@@ -12,8 +12,8 @@ import (
 	"runtime/debug"
 	"time"
 
-	"maunium.net/go/mautrix/event"
-	"maunium.net/go/mautrix/id"
+	"github.com/Dolphay/mautrix_tmp/event"
+	"github.com/Dolphay/mautrix_tmp/id"
 )
 
 // EventSource represents the part of the sync response that an event came from.
@@ -283,7 +283,7 @@ func (oei *OldEventIgnorer) DontProcessOldEvents(resp *RespSync, since string) b
 //
 // To use it, register it with your Syncer, e.g.:
 //
-//	cli.Syncer.(mautrix.ExtensibleSyncer).OnSync(cli.DontProcessOldEvents)
+//	cli.Syncer.(mautrix_tmp.ExtensibleSyncer).OnSync(cli.DontProcessOldEvents)
 func (cli *Client) DontProcessOldEvents(resp *RespSync, since string) bool {
 	return dontProcessOldEvents(cli.UserID, resp, since)
 }
@@ -323,7 +323,7 @@ func dontProcessOldEvents(userID id.UserID, resp *RespSync, since string) bool {
 //
 // To use it, register it with your Syncer, e.g.:
 //
-//	cli.Syncer.(mautrix.ExtensibleSyncer).OnSync(cli.MoveInviteState)
+//	cli.Syncer.(mautrix_tmp.ExtensibleSyncer).OnSync(cli.MoveInviteState)
 func (cli *Client) MoveInviteState(resp *RespSync, _ string) bool {
 	for _, meta := range resp.Rooms.Invite {
 		var inviteState []event.StrippedState

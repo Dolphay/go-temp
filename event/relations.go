@@ -9,7 +9,7 @@ package event
 import (
 	"encoding/json"
 
-	"maunium.net/go/mautrix/id"
+	"github.com/Dolphay/mautrix_tmp/id"
 )
 
 type RelationType string

@@ -9,16 +9,16 @@ package ssss
 import (
 	"fmt"
 
-	"maunium.net/go/mautrix"
-	"maunium.net/go/mautrix/event"
+	"github.com/Dolphay/mautrix_tmp"
+	"github.com/Dolphay/mautrix_tmp/event"
 )
 
 // Machine contains utility methods for interacting with SSSS data on the server.
 type Machine struct {
-	Client *mautrix.Client
+	Client *mautrix_tmp.Client
 }
 
-func NewSSSSMachine(client *mautrix.Client) *Machine {
+func NewSSSSMachine(client *mautrix_tmp.Client) *Machine {
 	return &Machine{
 		Client: client,
 	}
@@ -33,7 +33,7 @@ func (mach *Machine) GetDefaultKeyID() (string, error) {
 	var data DefaultSecretStorageKeyContent
 	err := mach.Client.GetAccountData(event.AccountDataSecretStorageDefaultKey.Type, &data)
 	if err != nil {
-		if httpErr, ok := err.(mautrix.HTTPError); ok && httpErr.RespError != nil && httpErr.RespError.ErrCode == "M_NOT_FOUND" {
+		if httpErr, ok := err.(mautrix_tmp.HTTPError); ok && httpErr.RespError != nil && httpErr.RespError.ErrCode == "M_NOT_FOUND" {
 			return "", ErrNoDefaultKeyAccountDataEvent
 		}
 		return "", fmt.Errorf("failed to get default key account data from server: %w", err)

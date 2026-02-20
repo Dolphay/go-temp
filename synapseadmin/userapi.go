@@ -13,8 +13,8 @@ import (
 
 	"go.mau.fi/util/jsontime"
 
-	"maunium.net/go/mautrix"
-	"maunium.net/go/mautrix/id"
+	"github.com/Dolphay/mautrix_tmp"
+	"github.com/Dolphay/mautrix_tmp/id"
 )
 
 // ReqResetPassword is the request content for Client.ResetPassword.
@@ -33,7 +33,7 @@ type ReqResetPassword struct {
 // https://matrix-org.github.io/synapse/latest/admin_api/user_admin_api.html#reset-password
 func (cli *Client) ResetPassword(ctx context.Context, req ReqResetPassword) error {
 	reqURL := cli.BuildAdminURL("v1", "reset_password", req.UserID)
-	_, err := cli.MakeFullRequest(mautrix.FullRequest{
+	_, err := cli.MakeFullRequest(mautrix_tmp.FullRequest{
 		Method:      http.MethodPost,
 		URL:         reqURL,
 		RequestJSON: &req,
@@ -44,13 +44,13 @@ func (cli *Client) ResetPassword(ctx context.Context, req ReqResetPassword) erro
 
 // UsernameAvailable checks if a username is valid and available for registration on the server using the admin API.
 //
-// The response format is the same as mautrix.Client.RegisterAvailable,
+// The response format is the same as mautrix_tmp.Client.RegisterAvailable,
 // but it works even if registration is disabled on the server.
 //
 // https://matrix-org.github.io/synapse/latest/admin_api/user_admin_api.html#check-username-availability
-func (cli *Client) UsernameAvailable(ctx context.Context, username string) (resp *mautrix.RespRegisterAvailable, err error) {
-	u := cli.BuildURLWithQuery(mautrix.SynapseAdminURLPath{"v1", "username_available"}, map[string]string{"username": username})
-	_, err = cli.MakeFullRequest(mautrix.FullRequest{
+func (cli *Client) UsernameAvailable(ctx context.Context, username string) (resp *mautrix_tmp.RespRegisterAvailable, err error) {
+	u := cli.BuildURLWithQuery(mautrix_tmp.SynapseAdminURLPath{"v1", "username_available"}, map[string]string{"username": username})
+	_, err = cli.MakeFullRequest(mautrix_tmp.FullRequest{
 		Method:       http.MethodGet,
 		URL:          u,
 		ResponseJSON: &resp,
@@ -63,7 +63,7 @@ func (cli *Client) UsernameAvailable(ctx context.Context, username string) (resp
 }
 
 type DeviceInfo struct {
-	mautrix.RespDeviceInfo
+	mautrix_tmp.RespDeviceInfo
 	LastSeenUserAgent string `json:"last_seen_user_agent"`
 }
 
@@ -76,7 +76,7 @@ type RespListDevices struct {
 //
 // https://matrix-org.github.io/synapse/latest/admin_api/user_admin_api.html#list-all-devices
 func (cli *Client) ListDevices(ctx context.Context, userID id.UserID) (resp *RespListDevices, err error) {
-	_, err = cli.MakeFullRequest(mautrix.FullRequest{
+	_, err = cli.MakeFullRequest(mautrix_tmp.FullRequest{
 		Method:       http.MethodGet,
 		URL:          cli.BuildAdminURL("v2", "users", userID, "devices"),
 		ResponseJSON: &resp,
@@ -105,7 +105,7 @@ type RespUserInfo struct {
 //
 // https://matrix-org.github.io/synapse/latest/admin_api/user_admin_api.html#query-user-account
 func (cli *Client) GetUserInfo(ctx context.Context, userID id.UserID) (resp *RespUserInfo, err error) {
-	_, err = cli.MakeFullRequest(mautrix.FullRequest{
+	_, err = cli.MakeFullRequest(mautrix_tmp.FullRequest{
 		Method:       http.MethodGet,
 		URL:          cli.BuildAdminURL("v2", "users", userID),
 		ResponseJSON: &resp,

@@ -1,9 +1,9 @@
-package mautrix
+package mautrix_tmp
 
 import (
 	"errors"
 
-	"maunium.net/go/mautrix/id"
+	"github.com/Dolphay/mautrix_tmp/id"
 )
 
 // SyncStore is an interface which must be satisfied to store client data.
@@ -143,8 +143,8 @@ func (s *AccountDataStore) LoadNextBatch(userID id.UserID) string {
 // for account data changes of this event type, to avoid ending up in a sync
 // loop:
 //
-//	filter := mautrix.Filter{
-//		AccountData: mautrix.FilterPart{
+//	filter := mautrix_tmp.Filter{
+//		AccountData: mautrix_tmp.FilterPart{
 //			Limit: 20,
 //			NotTypes: []event.Type{
 //				event.NewEventType(eventType),
@@ -152,8 +152,8 @@ func (s *AccountDataStore) LoadNextBatch(userID id.UserID) string {
 //		},
 //	}
 //	// If you use a custom Syncer, set the filter there, not like this
-//	client.Syncer.(*mautrix.DefaultSyncer).FilterJSON = &filter
-//	client.Store = mautrix.NewAccountDataStore("com.example.mybot.store", client)
+//	client.Syncer.(*mautrix_tmp.DefaultSyncer).FilterJSON = &filter
+//	client.Store = mautrix_tmp.NewAccountDataStore("com.example.mybot.store", client)
 //	go func() {
 //		err := client.Sync()
 //		// don't forget to check err

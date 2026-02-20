@@ -33,13 +33,13 @@ import (
 	"maunium.net/go/maulogger/v2"
 	"maunium.net/go/maulogger/v2/maulogadapt"
 
-	"maunium.net/go/mautrix"
-	"maunium.net/go/mautrix/appservice"
-	"maunium.net/go/mautrix/bridge/bridgeconfig"
-	"maunium.net/go/mautrix/bridge/status"
-	"maunium.net/go/mautrix/event"
-	"maunium.net/go/mautrix/id"
-	"maunium.net/go/mautrix/sqlstatestore"
+	"github.com/Dolphay/mautrix_tmp"
+	"github.com/Dolphay/mautrix_tmp/appservice"
+	"github.com/Dolphay/mautrix_tmp/bridge/bridgeconfig"
+	"github.com/Dolphay/mautrix_tmp/bridge/status"
+	"github.com/Dolphay/mautrix_tmp/event"
+	"github.com/Dolphay/mautrix_tmp/id"
+	"github.com/Dolphay/mautrix_tmp/sqlstatestore"
 )
 
 var configPath = flag.MakeFull("c", "config", "The path to your config file.", "config.yaml").String()
@@ -151,7 +151,7 @@ type WebsocketStartingBridge interface {
 }
 
 type CSFeatureRequirer interface {
-	CheckFeatures(versions *mautrix.RespVersions) (string, bool)
+	CheckFeatures(versions *mautrix_tmp.RespVersions) (string, bool)
 }
 
 type Bridge struct {
@@ -195,8 +195,8 @@ type Bridge struct {
 	Log  maulogger.Logger
 	ZLog *zerolog.Logger
 
-	MediaConfig  mautrix.RespMediaConfig
-	SpecVersions mautrix.RespVersions
+	MediaConfig  mautrix_tmp.RespMediaConfig
+	SpecVersions mautrix_tmp.RespVersions
 
 	Child ChildOverride
 
@@ -224,7 +224,7 @@ type Crypto interface {
 	Start()
 	Stop()
 	Reset(startAfterReset bool)
-	Client() *mautrix.Client
+	Client() *mautrix_tmp.Client
 	ShareKeys(context.Context) error
 }
 
@@ -280,19 +280,19 @@ func (br *Bridge) InitVersion(tag, commit, buildTime string) {
 	} else if len(commit) > 8 {
 		br.LinkifiedVersion = strings.Replace(br.LinkifiedVersion, commit[:8], fmt.Sprintf("[%s](%s/commit/%s)", commit[:8], br.URL, commit), 1)
 	}
-	mautrix.DefaultUserAgent = fmt.Sprintf("%s/%s %s", br.Name, br.Version, mautrix.DefaultUserAgent)
+	mautrix_tmp.DefaultUserAgent = fmt.Sprintf("%s/%s %s", br.Name, br.Version, mautrix_tmp.DefaultUserAgent)
 	br.VersionDesc = fmt.Sprintf("%s %s (%s with %s)", br.Name, br.Version, buildTime, runtime.Version())
 	br.commit = commit
 	br.BuildTime = buildTime
 }
 
-var MinSpecVersion = mautrix.SpecV11
+var MinSpecVersion = mautrix_tmp.SpecV11
 
 func (br *Bridge) ensureConnection() {
 	for {
 		versions, err := br.Bot.Versions()
 		if err != nil {
-			if errors.Is(err, mautrix.MForbidden) {
+			if errors.Is(err, mautrix_tmp.MForbidden) {
 				br.ZLog.Debug().Msg("M_FORBIDDEN in /versions, trying to register before retrying")
 				err = br.Bot.EnsureRegistered()
 				if err != nil {
@@ -309,7 +309,7 @@ func (br *Bridge) ensureConnection() {
 		}
 	}
 
-	if br.Config.Homeserver.Software == bridgeconfig.SoftwareHungry && !br.SpecVersions.Supports(mautrix.BeeperFeatureHungry) {
+	if br.Config.Homeserver.Software == bridgeconfig.SoftwareHungry && !br.SpecVersions.Supports(mautrix_tmp.BeeperFeatureHungry) {
 		br.ZLog.WithLevel(zerolog.FatalLevel).Msg("The config claims the homeserver is hungryserv, but the /versions response didn't confirm it")
 		os.Exit(18)
 	} else if !br.SpecVersions.ContainsGreaterOrEqual(MinSpecVersion) {
@@ -327,9 +327,9 @@ func (br *Bridge) ensureConnection() {
 
 	resp, err := br.Bot.Whoami()
 	if err != nil {
-		if errors.Is(err, mautrix.MUnknownToken) {
+		if errors.Is(err, mautrix_tmp.MUnknownToken) {
 			br.ZLog.WithLevel(zerolog.FatalLevel).Msg("The as_token was not accepted. Is the registration file installed in your homeserver correctly?")
-		} else if errors.Is(err, mautrix.MExclusive) {
+		} else if errors.Is(err, mautrix_tmp.MExclusive) {
 			br.ZLog.WithLevel(zerolog.FatalLevel).Msg("The as_token was accepted, but the /register request was not. Are the homeserver domain and username template in the config correct, and do they match the values in the registration?")
 		} else {
 			br.ZLog.WithLevel(zerolog.FatalLevel).Err(err).Msg("/whoami request failed with unknown error")
@@ -346,11 +346,11 @@ func (br *Bridge) ensureConnection() {
 	if br.Websocket {
 		br.ZLog.Debug().Msg("Websocket mode: no need to check status of homeserver -> bridge connection")
 		return
-	} else if !br.SpecVersions.Supports(mautrix.FeatureAppservicePing) {
+	} else if !br.SpecVersions.Supports(mautrix_tmp.FeatureAppservicePing) {
 		br.ZLog.Debug().Msg("Homeserver does not support checking status of homeserver -> bridge connection")
 		return
 	}
-	var pingResp *mautrix.RespAppservicePing
+	var pingResp *mautrix_tmp.RespAppservicePing
 	var txnID string
 	var retryCount int
 	const maxRetries = 6
@@ -360,7 +360,7 @@ func (br *Bridge) ensureConnection() {
 		if err == nil {
 			break
 		}
-		var httpErr mautrix.HTTPError
+		var httpErr mautrix_tmp.HTTPError
 		var pingErrBody string
 		if errors.As(err, &httpErr) && httpErr.RespError != nil {
 			if val, ok := httpErr.RespError.ExtraData["body"].(string); ok {
@@ -428,7 +428,7 @@ func (br *Bridge) UpdateBotProfile() {
 		br.ZLog.Warn().Err(err).Msg("Failed to update bot displayname")
 	}
 
-	if br.SpecVersions.Supports(mautrix.BeeperFeatureArbitraryProfileMeta) && br.BeeperNetworkName != "" {
+	if br.SpecVersions.Supports(mautrix_tmp.BeeperFeatureArbitraryProfileMeta) && br.BeeperNetworkName != "" {
 		br.ZLog.Debug().Msg("Setting contact info on the appservice bot")
 		br.Bot.BeeperUpdateProfile(map[string]any{
 			"com.beeper.bridge.service":       br.BeeperServiceName,
@@ -829,8 +829,8 @@ func (br *Bridge) Main() {
 			OS:   runtime.GOOS,
 			Arch: runtime.GOARCH,
 		}
-		output.Mautrix.Commit = mautrix.Commit
-		output.Mautrix.Version = mautrix.Version
+		output.mautrix_tmp.Commit = mautrix_tmp.Commit
+		output.mautrix_tmp.Version = mautrix_tmp.Version
 		_ = json.NewEncoder(os.Stdout).Encode(output)
 		return
 	} else if flagHandler, ok := br.Child.(FlagHandlingBridge); ok && flagHandler.HandleFlags() {

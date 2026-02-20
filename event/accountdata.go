@@ -9,7 +9,7 @@ package event
 import (
 	"encoding/json"
 
-	"maunium.net/go/mautrix/id"
+	"github.com/Dolphay/mautrix_tmp/id"
 )
 
 // TagEventContent represents the content of a m.tag room account data event.

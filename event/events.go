@@ -10,7 +10,7 @@ import (
 	"encoding/json"
 	"time"
 
-	"maunium.net/go/mautrix/id"
+	"github.com/Dolphay/mautrix_tmp/id"
 )
 
 // Event represents a single Matrix event.

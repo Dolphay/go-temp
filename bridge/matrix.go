@@ -15,13 +15,13 @@ import (
 
 	"github.com/rs/zerolog"
 
-	"maunium.net/go/mautrix"
-	"maunium.net/go/mautrix/appservice"
-	"maunium.net/go/mautrix/bridge/bridgeconfig"
-	"maunium.net/go/mautrix/bridge/status"
-	"maunium.net/go/mautrix/event"
-	"maunium.net/go/mautrix/format"
-	"maunium.net/go/mautrix/id"
+	"github.com/Dolphay/mautrix_tmp"
+	"github.com/Dolphay/mautrix_tmp/appservice"
+	"github.com/Dolphay/mautrix_tmp/bridge/bridgeconfig"
+	"github.com/Dolphay/mautrix_tmp/bridge/status"
+	"github.com/Dolphay/mautrix_tmp/event"
+	"github.com/Dolphay/mautrix_tmp/format"
+	"github.com/Dolphay/mautrix_tmp/id"
 )
 
 type CommandProcessor interface {
@@ -69,7 +69,7 @@ func NewMatrixHandler(br *Bridge) *MatrixHandler {
 }
 
 func (mx *MatrixHandler) sendBridgeCheckpoint(evt *event.Event) {
-	if !evt.Mautrix.CheckpointSent {
+	if !evt.mautrix_tmp.CheckpointSent {
 		go mx.bridge.SendMessageSuccessCheckpoint(evt, status.MsgStepBridge, 0)
 	}
 }
@@ -97,7 +97,7 @@ func (mx *MatrixHandler) HandleEncryption(evt *event.Event) {
 	}
 }
 
-func (mx *MatrixHandler) joinAndCheckMembers(ctx context.Context, evt *event.Event, intent *appservice.IntentAPI) *mautrix.RespJoinedMembers {
+func (mx *MatrixHandler) joinAndCheckMembers(ctx context.Context, evt *event.Event, intent *appservice.IntentAPI) *mautrix_tmp.RespJoinedMembers {
 	log := zerolog.Ctx(ctx)
 	resp, err := intent.JoinRoomByID(evt.RoomID)
 	if err != nil {
@@ -120,7 +120,7 @@ func (mx *MatrixHandler) joinAndCheckMembers(ctx context.Context, evt *event.Eve
 	return members
 }
 
-func (mx *MatrixHandler) sendNoticeWithMarkdown(roomID id.RoomID, message string) (*mautrix.RespSendEvent, error) {
+func (mx *MatrixHandler) sendNoticeWithMarkdown(roomID id.RoomID, message string) (*mautrix_tmp.RespSendEvent, error) {
 	intent := mx.as.BotIntent()
 	content := format.RenderMarkdown(message, true, false)
 	content.MsgType = event.MsgNotice
@@ -176,7 +176,7 @@ func (mx *MatrixHandler) HandleGhostInvite(ctx context.Context, evt *event.Event
 
 	if inviter.GetPermissionLevel() < bridgeconfig.PermissionLevelUser {
 		log.Debug().Msg("Rejecting invite: inviter is not whitelisted")
-		_, err := intent.LeaveRoom(evt.RoomID, &mautrix.ReqLeave{
+		_, err := intent.LeaveRoom(evt.RoomID, &mautrix_tmp.ReqLeave{
 			Reason: "You're not whitelisted to use this bridge",
 		})
 		if err != nil {
@@ -185,7 +185,7 @@ func (mx *MatrixHandler) HandleGhostInvite(ctx context.Context, evt *event.Event
 		return
 	} else if !inviter.IsLoggedIn() {
 		log.Debug().Msg("Rejecting invite: inviter is not logged in")
-		_, err := intent.LeaveRoom(evt.RoomID, &mautrix.ReqLeave{
+		_, err := intent.LeaveRoom(evt.RoomID, &mautrix_tmp.ReqLeave{
 			Reason: "You're not logged into this bridge",
 		})
 		if err != nil {
@@ -203,7 +203,7 @@ func (mx *MatrixHandler) HandleGhostInvite(ctx context.Context, evt *event.Event
 		log.Warn().Err(err).Msg("Failed to check m.room.create event in room")
 	} else if createEvent.Type != "" {
 		log.Warn().Str("room_type", string(createEvent.Type)).Msg("Non-standard room type, leaving room")
-		_, err = intent.LeaveRoom(evt.RoomID, &mautrix.ReqLeave{
+		_, err = intent.LeaveRoom(evt.RoomID, &mautrix_tmp.ReqLeave{
 			Reason: "Unsupported room type",
 		})
 		if err != nil {
@@ -445,14 +445,14 @@ func copySomeKeys(original, decrypted *event.Event) {
 func (mx *MatrixHandler) postDecrypt(ctx context.Context, original, decrypted *event.Event, retryCount int, errorEventID id.EventID, duration time.Duration) {
 	log := zerolog.Ctx(ctx)
 	minLevel := mx.bridge.Config.Bridge.GetEncryptionConfig().VerificationLevels.Send
-	if decrypted.Mautrix.TrustState < minLevel {
+	if decrypted.mautrix_tmp.TrustState < minLevel {
 		logEvt := log.Warn().
 			Str("user_id", decrypted.Sender.String()).
-			Bool("forwarded_keys", decrypted.Mautrix.ForwardedKeys).
-			Stringer("device_trust", decrypted.Mautrix.TrustState).
+			Bool("forwarded_keys", decrypted.mautrix_tmp.ForwardedKeys).
+			Stringer("device_trust", decrypted.mautrix_tmp.TrustState).
 			Stringer("min_trust", minLevel)
-		if decrypted.Mautrix.TrustSource != nil {
-			dev := decrypted.Mautrix.TrustSource
+		if decrypted.mautrix_tmp.TrustSource != nil {
+			dev := decrypted.mautrix_tmp.TrustSource
 			logEvt.
 				Str("device_id", dev.DeviceID.String()).
 				Str("device_signing_key", dev.SigningKey.String())
@@ -460,15 +460,15 @@ func (mx *MatrixHandler) postDecrypt(ctx context.Context, original, decrypted *e
 			logEvt.Str("device_id", "unknown")
 		}
 		logEvt.Msg("Dropping event due to insufficient verification level")
-		err := deviceUnverifiedErrorWithExplanation(decrypted.Mautrix.TrustState)
+		err := deviceUnverifiedErrorWithExplanation(decrypted.mautrix_tmp.TrustState)
 		go mx.sendCryptoStatusError(ctx, decrypted, errorEventID, err, retryCount, true)
 		return
 	}
 	copySomeKeys(original, decrypted)
 
 	mx.bridge.SendMessageSuccessCheckpoint(decrypted, status.MsgStepDecrypted, retryCount)
-	decrypted.Mautrix.CheckpointSent = true
-	decrypted.Mautrix.DecryptionDuration = duration
+	decrypted.mautrix_tmp.CheckpointSent = true
+	decrypted.mautrix_tmp.DecryptionDuration = duration
 	mx.bridge.EventProcessor.Dispatch(decrypted)
 	if errorEventID != "" {
 		_, _ = mx.bridge.Bot.RedactEvent(decrypted.RoomID, errorEventID)
@@ -550,7 +550,7 @@ func (mx *MatrixHandler) HandleMessage(evt *event.Event) {
 	defer mx.TrackEventDuration(evt.Type)()
 	if mx.shouldIgnoreEvent(evt) {
 		return
-	} else if !evt.Mautrix.WasEncrypted && mx.bridge.Config.Bridge.GetEncryptionConfig().Require {
+	} else if !evt.mautrix_tmp.WasEncrypted && mx.bridge.Config.Bridge.GetEncryptionConfig().Require {
 		log := mx.log.With().Str("event_id", evt.ID.String()).Logger()
 		log.Warn().Msg("Dropping unencrypted event")
 		ctx := log.WithContext(context.Background())

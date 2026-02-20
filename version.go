@@ -1,4 +1,4 @@
-package mautrix
+package mautrix_tmp
 
 import (
 	"fmt"

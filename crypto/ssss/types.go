@@ -11,7 +11,7 @@ import (
 	"fmt"
 	"reflect"
 
-	"maunium.net/go/mautrix/event"
+	"github.com/Dolphay/mautrix_tmp/event"
 )
 
 var (

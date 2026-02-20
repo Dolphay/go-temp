@@ -16,8 +16,8 @@ import (
 	"github.com/gorilla/mux"
 	"go.mau.fi/util/jsontime"
 
-	"maunium.net/go/mautrix"
-	"maunium.net/go/mautrix/id"
+	"github.com/Dolphay/mautrix_tmp"
+	"github.com/Dolphay/mautrix_tmp/id"
 )
 
 type ServerVersion struct {
@@ -58,14 +58,14 @@ func (ks *KeyServer) Register(r *mux.Router) {
 	keyRouter.HandleFunc("/v2/query/{serverName}", ks.GetQueryKeys).Methods(http.MethodGet)
 	keyRouter.HandleFunc("/v2/query", ks.PostQueryKeys).Methods(http.MethodPost)
 	keyRouter.NotFoundHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		jsonResponse(w, http.StatusNotFound, &mautrix.RespError{
-			ErrCode: mautrix.MUnrecognized.ErrCode,
+		jsonResponse(w, http.StatusNotFound, &mautrix_tmp.RespError{
+			ErrCode: mautrix_tmp.MUnrecognized.ErrCode,
 			Err:     "Unrecognized endpoint",
 		})
 	})
 	keyRouter.MethodNotAllowedHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		jsonResponse(w, http.StatusMethodNotAllowed, &mautrix.RespError{
-			ErrCode: mautrix.MUnrecognized.ErrCode,
+		jsonResponse(w, http.StatusMethodNotAllowed, &mautrix_tmp.RespError{
+			ErrCode: mautrix_tmp.MUnrecognized.ErrCode,
 			Err:     "Invalid method for endpoint",
 		})
 	})
@@ -87,8 +87,8 @@ type RespWellKnown struct {
 // https://spec.matrix.org/v1.9/server-server-api/#get_well-knownmatrixserver
 func (ks *KeyServer) GetWellKnown(w http.ResponseWriter, r *http.Request) {
 	if ks.WellKnownTarget == "" {
-		jsonResponse(w, http.StatusNotFound, &mautrix.RespError{
-			ErrCode: mautrix.MNotFound.ErrCode,
+		jsonResponse(w, http.StatusNotFound, &mautrix_tmp.RespError{
+			ErrCode: mautrix_tmp.MNotFound.ErrCode,
 			Err:     "No well-known target set",
 		})
 	} else {
@@ -114,8 +114,8 @@ func (ks *KeyServer) GetServerVersion(w http.ResponseWriter, r *http.Request) {
 func (ks *KeyServer) GetServerKey(w http.ResponseWriter, r *http.Request) {
 	domain, key := ks.KeyProvider.Get(r)
 	if key == nil {
-		jsonResponse(w, http.StatusNotFound, &mautrix.RespError{
-			ErrCode: mautrix.MNotFound.ErrCode,
+		jsonResponse(w, http.StatusNotFound, &mautrix_tmp.RespError{
+			ErrCode: mautrix_tmp.MNotFound.ErrCode,
 			Err:     fmt.Sprintf("No signing key found for %q", r.Host),
 		})
 	} else {
@@ -144,8 +144,8 @@ func (ks *KeyServer) PostQueryKeys(w http.ResponseWriter, r *http.Request) {
 	var req ReqQueryKeys
 	err := json.NewDecoder(r.Body).Decode(&req)
 	if err != nil {
-		jsonResponse(w, http.StatusBadRequest, &mautrix.RespError{
-			ErrCode: mautrix.MBadJSON.ErrCode,
+		jsonResponse(w, http.StatusBadRequest, &mautrix_tmp.RespError{
+			ErrCode: mautrix_tmp.MBadJSON.ErrCode,
 			Err:     fmt.Sprintf("failed to parse request: %v", err),
 		})
 		return
@@ -181,14 +181,14 @@ func (ks *KeyServer) GetQueryKeys(w http.ResponseWriter, r *http.Request) {
 	minimumValidUntilTSString := r.URL.Query().Get("minimum_valid_until_ts")
 	minimumValidUntilTS, err := strconv.ParseInt(minimumValidUntilTSString, 10, 64)
 	if err != nil && minimumValidUntilTSString != "" {
-		jsonResponse(w, http.StatusBadRequest, &mautrix.RespError{
-			ErrCode: mautrix.MInvalidParam.ErrCode,
+		jsonResponse(w, http.StatusBadRequest, &mautrix_tmp.RespError{
+			ErrCode: mautrix_tmp.MInvalidParam.ErrCode,
 			Err:     fmt.Sprintf("failed to parse ?minimum_valid_until_ts: %v", err),
 		})
 		return
 	} else if time.UnixMilli(minimumValidUntilTS).After(time.Now().Add(24 * time.Hour)) {
-		jsonResponse(w, http.StatusBadRequest, &mautrix.RespError{
-			ErrCode: mautrix.MInvalidParam.ErrCode,
+		jsonResponse(w, http.StatusBadRequest, &mautrix_tmp.RespError{
+			ErrCode: mautrix_tmp.MInvalidParam.ErrCode,
 			Err:     "minimum_valid_until_ts may not be more than 24 hours in the future",
 		})
 		return

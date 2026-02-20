@@ -4,7 +4,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-package mautrix_test
+package mautrix_tmp_test
 
 import (
 	"encoding/json"
@@ -14,8 +14,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"maunium.net/go/mautrix"
-	"maunium.net/go/mautrix/crypto/canonicaljson"
+	"github.com/Dolphay/mautrix_tmp"
+	"github.com/Dolphay/mautrix_tmp/crypto/canonicaljson"
 )
 
 const sampleData = `{
@@ -53,10 +53,10 @@ const sampleData = `{
   }
 }`
 
-var sampleObject = mautrix.RespCapabilities{
-	RoomVersions: &mautrix.CapRoomVersions{
+var sampleObject = mautrix_tmp.RespCapabilities{
+	RoomVersions: &mautrix_tmp.CapRoomVersions{
 		Default: "9",
-		Available: map[string]mautrix.CapRoomVersionStability{
+		Available: map[string]mautrix_tmp.CapRoomVersionStability{
 			"1":                    "stable",
 			"2":                    "stable",
 			"3":                    "stable",
@@ -72,9 +72,9 @@ var sampleObject = mautrix.RespCapabilities{
 			"10":                   "stable",
 		},
 	},
-	ChangePassword:  &mautrix.CapBooleanTrue{Enabled: true},
-	SetDisplayname:  &mautrix.CapBooleanTrue{Enabled: true},
-	ThreePIDChanges: &mautrix.CapBooleanTrue{Enabled: false},
+	ChangePassword:  &mautrix_tmp.CapBooleanTrue{Enabled: true},
+	SetDisplayname:  &mautrix_tmp.CapBooleanTrue{Enabled: true},
+	ThreePIDChanges: &mautrix_tmp.CapBooleanTrue{Enabled: false},
 	Custom: map[string]interface{}{
 		"fi.mau.custom_field": map[string]interface{}{
 			"🐈️": true,
@@ -83,7 +83,7 @@ var sampleObject = mautrix.RespCapabilities{
 }
 
 func TestRespCapabilities_UnmarshalJSON(t *testing.T) {
-	var caps mautrix.RespCapabilities
+	var caps mautrix_tmp.RespCapabilities
 	err := json.Unmarshal([]byte(sampleData), &caps)
 	require.NoError(t, err)
 	fmt.Println(caps)

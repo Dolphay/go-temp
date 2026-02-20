@@ -14,7 +14,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"maunium.net/go/mautrix"
+	"github.com/Dolphay/mautrix_tmp"
 )
 
 type respGetRegisterNonce struct {
@@ -73,9 +73,9 @@ func (req *ReqSharedSecretRegister) Sign(secret string) string {
 // This does not need to be called manually as SharedSecretRegister will automatically call this if no nonce is provided.
 func (cli *Client) GetRegisterNonce(ctx context.Context) (string, error) {
 	var resp respGetRegisterNonce
-	_, err := cli.MakeFullRequest(mautrix.FullRequest{
+	_, err := cli.MakeFullRequest(mautrix_tmp.FullRequest{
 		Method:       http.MethodGet,
-		URL:          cli.BuildURL(mautrix.SynapseAdminURLPath{"v1", "register"}),
+		URL:          cli.BuildURL(mautrix_tmp.SynapseAdminURLPath{"v1", "register"}),
 		ResponseJSON: &resp,
 		Context:      ctx,
 	})
@@ -88,7 +88,7 @@ func (cli *Client) GetRegisterNonce(ctx context.Context) (string, error) {
 // SharedSecretRegister creates a new account using a shared secret.
 //
 // https://matrix-org.github.io/synapse/latest/admin_api/register_api.html
-func (cli *Client) SharedSecretRegister(ctx context.Context, sharedSecret string, req ReqSharedSecretRegister) (*mautrix.RespRegister, error) {
+func (cli *Client) SharedSecretRegister(ctx context.Context, sharedSecret string, req ReqSharedSecretRegister) (*mautrix_tmp.RespRegister, error) {
 	var err error
 	if req.Nonce == "" {
 		req.Nonce, err = cli.GetRegisterNonce(ctx)
@@ -97,10 +97,10 @@ func (cli *Client) SharedSecretRegister(ctx context.Context, sharedSecret string
 		}
 	}
 	req.SHA1Checksum = req.Sign(sharedSecret)
-	var resp mautrix.RespRegister
-	_, err = cli.MakeFullRequest(mautrix.FullRequest{
+	var resp mautrix_tmp.RespRegister
+	_, err = cli.MakeFullRequest(mautrix_tmp.FullRequest{
 		Method:       http.MethodPost,
-		URL:          cli.BuildURL(mautrix.SynapseAdminURLPath{"v1", "register"}),
+		URL:          cli.BuildURL(mautrix_tmp.SynapseAdminURLPath{"v1", "register"}),
 		RequestJSON:  req,
 		ResponseJSON: &resp,
 		Context:      ctx,

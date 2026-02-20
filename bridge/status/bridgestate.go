@@ -20,8 +20,8 @@ import (
 	"go.mau.fi/util/jsontime"
 	"golang.org/x/exp/maps"
 
-	"maunium.net/go/mautrix"
-	"maunium.net/go/mautrix/id"
+	"github.com/Dolphay/mautrix_tmp"
+	"github.com/Dolphay/mautrix_tmp/id"
 )
 
 type BridgeStateEvent string
@@ -130,7 +130,7 @@ func (pong *BridgeState) SendHTTP(ctx context.Context, url, token string) error 
 	}
 
 	req.Header.Set("Authorization", "Bearer "+token)
-	req.Header.Set("User-Agent", mautrix.DefaultUserAgent+" (bridge state sender)")
+	req.Header.Set("User-Agent", mautrix_tmp.DefaultUserAgent+" (bridge state sender)")
 	req.Header.Set("Content-Type", "application/json")
 
 	resp, err := http.DefaultClient.Do(req)

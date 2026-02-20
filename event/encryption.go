@@ -10,7 +10,7 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"maunium.net/go/mautrix/id"
+	"github.com/Dolphay/mautrix_tmp/id"
 )
 
 // EncryptionEventContent represents the content of a m.room.encryption state event.

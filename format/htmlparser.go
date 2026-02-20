@@ -14,7 +14,7 @@ import (
 
 	"golang.org/x/net/html"
 
-	"maunium.net/go/mautrix/id"
+	"github.com/Dolphay/mautrix_tmp/id"
 )
 
 type TagStack []string

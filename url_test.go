@@ -4,18 +4,18 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-package mautrix_test
+package mautrix_tmp_test
 
 import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 
-	"maunium.net/go/mautrix"
+	"github.com/Dolphay/mautrix_tmp"
 )
 
 func TestClient_BuildURL(t *testing.T) {
-	cli, err := mautrix.NewClient("https://example.com", "", "")
+	cli, err := mautrix_tmp.NewClient("https://example.com", "", "")
 	assert.NoError(t, err)
 	assert.Equal(t, cli.HomeserverURL.Scheme, "https")
 	assert.Equal(t, cli.HomeserverURL.Host, "example.com")
@@ -25,7 +25,7 @@ func TestClient_BuildURL(t *testing.T) {
 }
 
 func TestClient_BuildURL_HTTP(t *testing.T) {
-	cli, err := mautrix.NewClient("http://example.com", "", "")
+	cli, err := mautrix_tmp.NewClient("http://example.com", "", "")
 	assert.NoError(t, err)
 	assert.Equal(t, cli.HomeserverURL.Scheme, "http")
 	assert.Equal(t, cli.HomeserverURL.Host, "example.com")
@@ -35,7 +35,7 @@ func TestClient_BuildURL_HTTP(t *testing.T) {
 }
 
 func TestClient_BuildURL_MissingScheme(t *testing.T) {
-	cli, err := mautrix.NewClient("example.com", "", "")
+	cli, err := mautrix_tmp.NewClient("example.com", "", "")
 	assert.NoError(t, err)
 	assert.Equal(t, cli.HomeserverURL.Scheme, "https")
 	assert.Equal(t, cli.HomeserverURL.Host, "example.com")
@@ -45,7 +45,7 @@ func TestClient_BuildURL_MissingScheme(t *testing.T) {
 }
 
 func TestClient_BuildURL_WithPath(t *testing.T) {
-	cli, err := mautrix.NewClient("https://example.com/base", "", "")
+	cli, err := mautrix_tmp.NewClient("https://example.com/base", "", "")
 	assert.NoError(t, err)
 	assert.Equal(t, cli.HomeserverURL.Scheme, "https")
 	assert.Equal(t, cli.HomeserverURL.Host, "example.com")
@@ -55,7 +55,7 @@ func TestClient_BuildURL_WithPath(t *testing.T) {
 }
 
 func TestClient_BuildURL_MissingSchemeWithPath(t *testing.T) {
-	cli, err := mautrix.NewClient("example.com/base", "", "")
+	cli, err := mautrix_tmp.NewClient("example.com/base", "", "")
 	assert.NoError(t, err)
 	assert.Equal(t, cli.HomeserverURL.Scheme, "https")
 	assert.Equal(t, cli.HomeserverURL.Host, "example.com")

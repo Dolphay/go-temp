@@ -10,12 +10,12 @@ package crypto
 import (
 	"context"
 
-	"maunium.net/go/mautrix"
-	"maunium.net/go/mautrix/crypto/olm"
-	"maunium.net/go/mautrix/id"
+	"github.com/Dolphay/mautrix_tmp"
+	"github.com/Dolphay/mautrix_tmp/crypto/olm"
+	"github.com/Dolphay/mautrix_tmp/id"
 )
 
-func (mach *OlmMachine) storeCrossSigningKeys(ctx context.Context, crossSigningKeys map[id.UserID]mautrix.CrossSigningKeys, deviceKeys map[id.UserID]map[id.DeviceID]mautrix.DeviceKeys) {
+func (mach *OlmMachine) storeCrossSigningKeys(ctx context.Context, crossSigningKeys map[id.UserID]mautrix_tmp.CrossSigningKeys, deviceKeys map[id.UserID]map[id.DeviceID]mautrix_tmp.DeviceKeys) {
 	log := mach.machOrContextLog(ctx)
 	for userID, userKeys := range crossSigningKeys {
 		log := log.With().Str("user_id", userID.String()).Logger()

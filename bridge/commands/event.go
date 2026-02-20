@@ -13,12 +13,12 @@ import (
 	"github.com/rs/zerolog"
 	"maunium.net/go/maulogger/v2"
 
-	"maunium.net/go/mautrix"
-	"maunium.net/go/mautrix/appservice"
-	"maunium.net/go/mautrix/bridge"
-	"maunium.net/go/mautrix/event"
-	"maunium.net/go/mautrix/format"
-	"maunium.net/go/mautrix/id"
+	"github.com/Dolphay/mautrix_tmp"
+	"github.com/Dolphay/mautrix_tmp/appservice"
+	"github.com/Dolphay/mautrix_tmp/bridge"
+	"github.com/Dolphay/mautrix_tmp/event"
+	"github.com/Dolphay/mautrix_tmp/format"
+	"github.com/Dolphay/mautrix_tmp/id"
 )
 
 // Event stores all data which might be used to handle commands
@@ -80,7 +80,7 @@ func (ce *Event) React(key string) {
 }
 
 // Redact redacts the command.
-func (ce *Event) Redact(req ...mautrix.ReqRedact) {
+func (ce *Event) Redact(req ...mautrix_tmp.ReqRedact) {
 	_, err := ce.MainIntent().RedactEvent(ce.RoomID, ce.EventID, req...)
 	if err != nil {
 		ce.ZLog.Error().Err(err).Msgf("Failed to redact command")

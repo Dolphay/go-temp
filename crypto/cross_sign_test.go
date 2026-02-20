@@ -15,9 +15,9 @@ import (
 	"github.com/rs/zerolog"
 	"go.mau.fi/util/dbutil"
 
-	"maunium.net/go/mautrix"
-	"maunium.net/go/mautrix/crypto/olm"
-	"maunium.net/go/mautrix/id"
+	"github.com/Dolphay/mautrix_tmp"
+	"github.com/Dolphay/mautrix_tmp/crypto/olm"
+	"github.com/Dolphay/mautrix_tmp/id"
 )
 
 var noopLogger = zerolog.Nop()
@@ -52,7 +52,7 @@ func getOlmMachine(t *testing.T) *OlmMachine {
 			SelfSigningKey: ssk,
 			UserSigningKey: usk,
 		},
-		Client: &mautrix.Client{
+		Client: &mautrix_tmp.Client{
 			UserID: userID,
 		},
 		Log: &noopLogger,

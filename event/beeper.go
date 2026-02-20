@@ -7,7 +7,7 @@
 package event
 
 import (
-	"maunium.net/go/mautrix/id"
+	"github.com/Dolphay/mautrix_tmp/id"
 )
 
 type MessageStatusReason string

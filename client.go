@@ -1,7 +1,7 @@
 // Package mautrix implements the Matrix Client-Server API.
 //
 // Specification can be found at https://spec.matrix.org/v1.2/client-server-api/
-package mautrix
+package mautrix_tmp
 
 import (
 	"bytes"
@@ -22,9 +22,9 @@ import (
 	"go.mau.fi/util/retryafter"
 	"maunium.net/go/maulogger/v2/maulogadapt"
 
-	"maunium.net/go/mautrix/event"
-	"maunium.net/go/mautrix/id"
-	"maunium.net/go/mautrix/pushrules"
+	"github.com/Dolphay/mautrix_tmp/event"
+	"github.com/Dolphay/mautrix_tmp/id"
+	"github.com/Dolphay/mautrix_tmp/pushrules"
 )
 
 type CryptoHelper interface {
@@ -669,13 +669,13 @@ func (cli *Client) FullSyncRequest(req ReqSync) (resp *RespSync, err error) {
 // error is nil. `errors.Is` can be used to find the exact reason why a username isn't available:
 //
 //	_, err := cli.RegisterAvailable("cat")
-//	if errors.Is(err, mautrix.MUserInUse) {
+//	if errors.Is(err, mautrix_tmp.MUserInUse) {
 //		// Username is taken
-//	} else if errors.Is(err, mautrix.MInvalidUsername) {
+//	} else if errors.Is(err, mautrix_tmp.MInvalidUsername) {
 //		// Username is not valid
-//	} else if errors.Is(err, mautrix.MExclusive) {
+//	} else if errors.Is(err, mautrix_tmp.MExclusive) {
 //		// Username is reserved for an appservice
-//	} else if errors.Is(err, mautrix.MLimitExceeded) {
+//	} else if errors.Is(err, mautrix_tmp.MLimitExceeded) {
 //		// Too many requests
 //	} else if err != nil {
 //		// Unknown error
@@ -739,7 +739,7 @@ func (cli *Client) RegisterGuest(req *ReqRegister) (*RespRegister, *RespUserInte
 //
 // This does not set credentials on the client instance. See SetCredentials() instead.
 //
-//	res, err := cli.RegisterDummy(&mautrix.ReqRegister{
+//	res, err := cli.RegisterDummy(&mautrix_tmp.ReqRegister{
 //		Username: "alice",
 //		Password: "wonderland",
 //	})
@@ -1123,7 +1123,7 @@ func (cli *Client) RedactEvent(roomID id.RoomID, eventID id.EventID, extra ...Re
 
 // CreateRoom creates a new Matrix room. See https://spec.matrix.org/v1.2/client-server-api/#post_matrixclientv3createroom
 //
-//	resp, err := cli.CreateRoom(&mautrix.ReqCreateRoom{
+//	resp, err := cli.CreateRoom(&mautrix_tmp.ReqCreateRoom{
 //		Preset: "public_chat",
 //	})
 //	fmt.Println("Room:", resp.RoomID)

@@ -7,16 +7,16 @@
 package synapseadmin
 
 import (
-	"maunium.net/go/mautrix"
+	"github.com/Dolphay/mautrix_tmp"
 )
 
-// Client is a wrapper for the mautrix.Client struct that includes methods for accessing the Synapse admin API.
+// Client is a wrapper for the mautrix_tmp.Client struct that includes methods for accessing the Synapse admin API.
 //
 // https://matrix-org.github.io/synapse/latest/usage/administration/admin_api/index.html
 type Client struct {
-	*mautrix.Client
+	*mautrix_tmp.Client
 }
 
 func (cli *Client) BuildAdminURL(path ...any) string {
-	return cli.BuildURL(mautrix.SynapseAdminURLPath(path))
+	return cli.BuildURL(mautrix_tmp.SynapseAdminURLPath(path))
 }

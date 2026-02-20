@@ -26,9 +26,9 @@ import (
 	"gopkg.in/yaml.v3"
 	"maunium.net/go/maulogger/v2/maulogadapt"
 
-	"maunium.net/go/mautrix"
-	"maunium.net/go/mautrix/event"
-	"maunium.net/go/mautrix/id"
+	"github.com/Dolphay/mautrix_tmp"
+	"github.com/Dolphay/mautrix_tmp/event"
+	"github.com/Dolphay/mautrix_tmp/id"
 )
 
 // EventChannelSize is the size for the Events channel in Appservice instances.
@@ -40,12 +40,12 @@ func Create() *AppService {
 	jar, _ := cookiejar.New(&cookiejar.Options{PublicSuffixList: publicsuffix.List})
 	as := &AppService{
 		Log:        zerolog.Nop(),
-		clients:    make(map[id.UserID]*mautrix.Client),
+		clients:    make(map[id.UserID]*mautrix_tmp.Client),
 		intents:    make(map[id.UserID]*IntentAPI),
 		HTTPClient: &http.Client{Timeout: 180 * time.Second, Jar: jar},
-		StateStore: mautrix.NewMemoryStateStore().(StateStore),
+		StateStore: mautrix_tmp.NewMemoryStateStore().(StateStore),
 		Router:     mux.NewRouter(),
-		UserAgent:  mautrix.DefaultUserAgent,
+		UserAgent:  mautrix_tmp.DefaultUserAgent,
 		txnIDC:     NewTransactionIDCache(128),
 		Live:       true,
 		Ready:      false,
@@ -53,8 +53,8 @@ func Create() *AppService {
 
 		Events:         make(chan *event.Event, EventChannelSize),
 		ToDeviceEvents: make(chan *event.Event, EventChannelSize),
-		OTKCounts:      make(chan *mautrix.OTKCount, OTKChannelSize),
-		DeviceLists:    make(chan *mautrix.DeviceLists, EventChannelSize),
+		OTKCounts:      make(chan *mautrix_tmp.OTKCount, OTKChannelSize),
+		DeviceLists:    make(chan *mautrix_tmp.DeviceLists, EventChannelSize),
 		QueryHandler:   &QueryHandlerStub{},
 	}
 
@@ -91,7 +91,7 @@ func (qh *QueryHandlerStub) QueryUser(userID id.UserID) bool {
 type WebsocketHandler func(WebsocketCommand) (ok bool, data interface{})
 
 type StateStore interface {
-	mautrix.StateStore
+	mautrix_tmp.StateStore
 
 	IsRegistered(userID id.UserID) bool
 	MarkRegistered(userID id.UserID)
@@ -113,12 +113,12 @@ type AppService struct {
 
 	txnIDC *TransactionIDCache
 
-	SpecVersions *mautrix.RespVersions
+	SpecVersions *mautrix_tmp.RespVersions
 
 	Events         chan *event.Event
 	ToDeviceEvents chan *event.Event
-	DeviceLists    chan *mautrix.DeviceLists
-	OTKCounts      chan *mautrix.OTKCount
+	DeviceLists    chan *mautrix_tmp.DeviceLists
+	OTKCounts      chan *mautrix_tmp.OTKCount
 	QueryHandler   QueryHandler
 	StateStore     StateStore
 
@@ -126,7 +126,7 @@ type AppService struct {
 	UserAgent  string
 	server     *http.Server
 	HTTPClient *http.Client
-	botClient  *mautrix.Client
+	botClient  *mautrix_tmp.Client
 	botIntent  *IntentAPI
 
 	DefaultHTTPRetries int
@@ -134,7 +134,7 @@ type AppService struct {
 	Live  bool
 	Ready bool
 
-	clients     map[id.UserID]*mautrix.Client
+	clients     map[id.UserID]*mautrix_tmp.Client
 	clientsLock sync.RWMutex
 	intents     map[id.UserID]*IntentAPI
 	intentsLock sync.RWMutex
@@ -298,8 +298,8 @@ func (as *AppService) SetHomeserverURL(homeserverURL string) error {
 	return nil
 }
 
-func (as *AppService) NewMautrixClient(userID id.UserID) *mautrix.Client {
-	client := &mautrix.Client{
+func (as *AppService) NewMautrixClient(userID id.UserID) *mautrix_tmp.Client {
+	client := &mautrix_tmp.Client{
 		HomeserverURL:       as.hsURLForClient,
 		UserID:              userID,
 		SetAppServiceUserID: true,
@@ -315,14 +315,14 @@ func (as *AppService) NewMautrixClient(userID id.UserID) *mautrix.Client {
 	return client
 }
 
-func (as *AppService) NewExternalMautrixClient(userID id.UserID, token string, homeserverURL string) (*mautrix.Client, error) {
+func (as *AppService) NewExternalMautrixClient(userID id.UserID, token string, homeserverURL string) (*mautrix_tmp.Client, error) {
 	client := as.NewMautrixClient(userID)
 	client.AccessToken = token
 	client.SetAppServiceUserID = false
 	if homeserverURL != "" {
 		client.Client = &http.Client{Timeout: 180 * time.Second}
 		var err error
-		client.HomeserverURL, err = mautrix.ParseAndNormalizeBaseURL(homeserverURL)
+		client.HomeserverURL, err = mautrix_tmp.ParseAndNormalizeBaseURL(homeserverURL)
 		if err != nil {
 			return nil, err
 		}
@@ -330,7 +330,7 @@ func (as *AppService) NewExternalMautrixClient(userID id.UserID, token string, h
 	return client, nil
 }
 
-func (as *AppService) makeClient(userID id.UserID) *mautrix.Client {
+func (as *AppService) makeClient(userID id.UserID) *mautrix_tmp.Client {
 	as.clientsLock.Lock()
 	defer as.clientsLock.Unlock()
 
@@ -342,7 +342,7 @@ func (as *AppService) makeClient(userID id.UserID) *mautrix.Client {
 	return client
 }
 
-func (as *AppService) Client(userID id.UserID) *mautrix.Client {
+func (as *AppService) Client(userID id.UserID) *mautrix_tmp.Client {
 	as.clientsLock.RLock()
 	client, ok := as.clients[userID]
 	as.clientsLock.RUnlock()
@@ -352,7 +352,7 @@ func (as *AppService) Client(userID id.UserID) *mautrix.Client {
 	return client
 }
 
-func (as *AppService) BotClient() *mautrix.Client {
+func (as *AppService) BotClient() *mautrix_tmp.Client {
 	if as.botClient == nil {
 		as.botClient = as.makeClient(as.BotMXID())
 	}

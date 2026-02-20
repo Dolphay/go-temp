@@ -13,8 +13,8 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"maunium.net/go/mautrix/crypto/ssss"
-	"maunium.net/go/mautrix/event"
+	"github.com/Dolphay/mautrix_tmp/crypto/ssss"
+	"github.com/Dolphay/mautrix_tmp/event"
 )
 
 const key1CrossSigningMasterKey = `

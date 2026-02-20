@@ -9,7 +9,7 @@ package event
 import (
 	"encoding/json"
 
-	"maunium.net/go/mautrix/id"
+	"github.com/Dolphay/mautrix_tmp/id"
 )
 
 // Membership is an enum specifying the membership state of a room member.

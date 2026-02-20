@@ -20,11 +20,11 @@ import (
 	"github.com/rs/zerolog"
 	"go.mau.fi/util/dbutil"
 
-	"maunium.net/go/mautrix"
-	"maunium.net/go/mautrix/crypto/olm"
-	"maunium.net/go/mautrix/crypto/sql_store_upgrade"
-	"maunium.net/go/mautrix/event"
-	"maunium.net/go/mautrix/id"
+	"github.com/Dolphay/mautrix_tmp"
+	"github.com/Dolphay/mautrix_tmp/crypto/olm"
+	"github.com/Dolphay/mautrix_tmp/crypto/sql_store_upgrade"
+	"github.com/Dolphay/mautrix_tmp/event"
+	"github.com/Dolphay/mautrix_tmp/id"
 )
 
 var PostgresArrayWrapper func(interface{}) interface {
@@ -86,7 +86,7 @@ func (store *SQLCryptoStore) GetNextBatch() (string, error) {
 	return store.SyncToken, nil
 }
 
-var _ mautrix.SyncStore = (*SQLCryptoStore)(nil)
+var _ mautrix_tmp.SyncStore = (*SQLCryptoStore)(nil)
 
 func (store *SQLCryptoStore) SaveFilterID(_ id.UserID, _ string) {}
 func (store *SQLCryptoStore) LoadFilterID(_ id.UserID) string    { return "" }

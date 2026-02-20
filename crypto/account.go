@@ -7,9 +7,9 @@
 package crypto
 
 import (
-	"maunium.net/go/mautrix"
-	"maunium.net/go/mautrix/crypto/olm"
-	"maunium.net/go/mautrix/id"
+	"github.com/Dolphay/mautrix_tmp"
+	"github.com/Dolphay/mautrix_tmp/crypto/olm"
+	"github.com/Dolphay/mautrix_tmp/id"
 )
 
 type OlmAccount struct {
@@ -46,8 +46,8 @@ func (account *OlmAccount) IdentityKey() id.IdentityKey {
 	return account.identityKey
 }
 
-func (account *OlmAccount) getInitialKeys(userID id.UserID, deviceID id.DeviceID) *mautrix.DeviceKeys {
-	deviceKeys := &mautrix.DeviceKeys{
+func (account *OlmAccount) getInitialKeys(userID id.UserID, deviceID id.DeviceID) *mautrix_tmp.DeviceKeys {
+	deviceKeys := &mautrix_tmp.DeviceKeys{
 		UserID:     userID,
 		DeviceID:   deviceID,
 		Algorithms: []id.Algorithm{id.AlgorithmMegolmV1, id.AlgorithmOlmV1},
@@ -62,7 +62,7 @@ func (account *OlmAccount) getInitialKeys(userID id.UserID, deviceID id.DeviceID
 		panic(err)
 	}
 
-	deviceKeys.Signatures = mautrix.Signatures{
+	deviceKeys.Signatures = mautrix_tmp.Signatures{
 		userID: {
 			id.NewKeyID(id.KeyAlgorithmEd25519, deviceID.String()): signature,
 		},
@@ -70,16 +70,16 @@ func (account *OlmAccount) getInitialKeys(userID id.UserID, deviceID id.DeviceID
 	return deviceKeys
 }
 
-func (account *OlmAccount) getOneTimeKeys(userID id.UserID, deviceID id.DeviceID, currentOTKCount int) map[id.KeyID]mautrix.OneTimeKey {
+func (account *OlmAccount) getOneTimeKeys(userID id.UserID, deviceID id.DeviceID, currentOTKCount int) map[id.KeyID]mautrix_tmp.OneTimeKey {
 	newCount := int(account.Internal.MaxNumberOfOneTimeKeys()/2) - currentOTKCount
 	if newCount > 0 {
 		account.Internal.GenOneTimeKeys(uint(newCount))
 	}
-	oneTimeKeys := make(map[id.KeyID]mautrix.OneTimeKey)
+	oneTimeKeys := make(map[id.KeyID]mautrix_tmp.OneTimeKey)
 	for keyID, key := range account.Internal.OneTimeKeys() {
-		key := mautrix.OneTimeKey{Key: key}
+		key := mautrix_tmp.OneTimeKey{Key: key}
 		signature, _ := account.Internal.SignJSON(key)
-		key.Signatures = mautrix.Signatures{
+		key.Signatures = mautrix_tmp.Signatures{
 			userID: {
 				id.NewKeyID(id.KeyAlgorithmEd25519, deviceID.String()): signature,
 			},

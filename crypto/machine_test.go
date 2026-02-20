@@ -13,9 +13,9 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"maunium.net/go/mautrix"
-	"maunium.net/go/mautrix/event"
-	"maunium.net/go/mautrix/id"
+	"github.com/Dolphay/mautrix_tmp"
+	"github.com/Dolphay/mautrix_tmp/event"
+	"github.com/Dolphay/mautrix_tmp/id"
 )
 
 type mockStateStore struct{}
@@ -35,7 +35,7 @@ func (mockStateStore) FindSharedRooms(id.UserID) []id.RoomID {
 }
 
 func newMachine(t *testing.T, userID id.UserID) *OlmMachine {
-	client, err := mautrix.NewClient("http://localhost", userID, "token")
+	client, err := mautrix_tmp.NewClient("http://localhost", userID, "token")
 	if err != nil {
 		t.Fatalf("Error creating client: %v", err)
 	}
@@ -71,7 +71,7 @@ func TestOlmMachineOlmMegolmSessions(t *testing.T) {
 
 	// generate OTKs for receiving machine
 	otks := machineIn.account.getOneTimeKeys("user2", "device2", 0)
-	var otk mautrix.OneTimeKey
+	var otk mautrix_tmp.OneTimeKey
 	for _, otkTmp := range otks {
 		// take first OTK
 		otk = otkTmp

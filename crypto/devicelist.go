@@ -13,9 +13,9 @@ import (
 
 	"github.com/rs/zerolog"
 
-	"maunium.net/go/mautrix"
-	"maunium.net/go/mautrix/crypto/olm"
-	"maunium.net/go/mautrix/id"
+	"github.com/Dolphay/mautrix_tmp"
+	"github.com/Dolphay/mautrix_tmp/crypto/olm"
+	"github.com/Dolphay/mautrix_tmp/id"
 )
 
 var (
@@ -32,7 +32,7 @@ func (mach *OlmMachine) LoadDevices(user id.UserID) map[id.DeviceID]*id.Device {
 	return mach.fetchKeys(context.TODO(), []id.UserID{user}, "", true)[user]
 }
 
-func (mach *OlmMachine) storeDeviceSelfSignatures(ctx context.Context, userID id.UserID, deviceID id.DeviceID, resp *mautrix.RespQueryKeys) {
+func (mach *OlmMachine) storeDeviceSelfSignatures(ctx context.Context, userID id.UserID, deviceID id.DeviceID, resp *mautrix_tmp.RespQueryKeys) {
 	log := zerolog.Ctx(ctx)
 	deviceKeys := resp.DeviceKeys[userID][deviceID]
 	for signerUserID, signerKeys := range deviceKeys.Signatures {
@@ -88,8 +88,8 @@ func (mach *OlmMachine) storeDeviceSelfSignatures(ctx context.Context, userID id
 
 func (mach *OlmMachine) fetchKeys(ctx context.Context, users []id.UserID, sinceToken string, includeUntracked bool) (data map[id.UserID]map[id.DeviceID]*id.Device) {
 	// TODO this function should probably return errors
-	req := &mautrix.ReqQueryKeys{
-		DeviceKeys: mautrix.DeviceKeysRequest{},
+	req := &mautrix_tmp.ReqQueryKeys{
+		DeviceKeys: mautrix_tmp.DeviceKeysRequest{},
 		Timeout:    10 * 1000,
 		Token:      sinceToken,
 	}
@@ -105,7 +105,7 @@ func (mach *OlmMachine) fetchKeys(ctx context.Context, users []id.UserID, sinceT
 		return
 	}
 	for _, userID := range users {
-		req.DeviceKeys[userID] = mautrix.DeviceIDList{}
+		req.DeviceKeys[userID] = mautrix_tmp.DeviceIDList{}
 	}
 	log.Debug().Strs("users", strishArray(users)).Msg("Querying keys for users")
 	resp, err := mach.Client.QueryKeys(req)
@@ -216,7 +216,7 @@ func (mach *OlmMachine) OnDevicesChanged(userID id.UserID) {
 	}
 }
 
-func (mach *OlmMachine) validateDevice(userID id.UserID, deviceID id.DeviceID, deviceKeys mautrix.DeviceKeys, existing *id.Device) (*id.Device, error) {
+func (mach *OlmMachine) validateDevice(userID id.UserID, deviceID id.DeviceID, deviceKeys mautrix_tmp.DeviceKeys, existing *id.Device) (*id.Device, error) {
 	if deviceID != deviceKeys.DeviceID {
 		return nil, fmt.Errorf("%w (expected %s, got %s)", MismatchingDeviceID, deviceID, deviceKeys.DeviceID)
 	} else if userID != deviceKeys.UserID {

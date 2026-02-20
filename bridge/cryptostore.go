@@ -12,8 +12,8 @@ import (
 	"github.com/lib/pq"
 	"go.mau.fi/util/dbutil"
 
-	"maunium.net/go/mautrix/crypto"
-	"maunium.net/go/mautrix/id"
+	"github.com/Dolphay/mautrix_tmp/crypto"
+	"github.com/Dolphay/mautrix_tmp/id"
 )
 
 func init() {

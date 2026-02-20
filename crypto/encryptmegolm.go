@@ -16,9 +16,9 @@ import (
 
 	"github.com/rs/zerolog"
 
-	"maunium.net/go/mautrix"
-	"maunium.net/go/mautrix/event"
-	"maunium.net/go/mautrix/id"
+	"github.com/Dolphay/mautrix_tmp"
+	"github.com/Dolphay/mautrix_tmp/event"
+	"github.com/Dolphay/mautrix_tmp/id"
 )
 
 var (
@@ -184,7 +184,7 @@ func (mach *OlmMachine) ShareGroupSession(ctx context.Context, roomID id.RoomID,
 	log.Debug().Strs("users", strishArray(users)).Msg("Sharing group session for room")
 
 	withheldCount := 0
-	toDeviceWithheld := &mautrix.ReqSendToDevice{Messages: make(map[id.UserID]map[id.DeviceID]*event.Content)}
+	toDeviceWithheld := &mautrix_tmp.ReqSendToDevice{Messages: make(map[id.UserID]map[id.DeviceID]*event.Content)}
 	olmSessions := make(map[id.UserID]map[id.DeviceID]deviceSessionWrapper)
 	missingSessions := make(map[id.UserID]map[id.DeviceID]*id.Device)
 	missingUserSessions := make(map[id.DeviceID]*id.Device)
@@ -301,7 +301,7 @@ func (mach *OlmMachine) encryptAndSendGroupSession(ctx context.Context, session 
 	log := zerolog.Ctx(ctx)
 	log.Trace().Msg("Encrypting group session for all found devices")
 	deviceCount := 0
-	toDevice := &mautrix.ReqSendToDevice{Messages: make(map[id.UserID]map[id.DeviceID]*event.Content)}
+	toDevice := &mautrix_tmp.ReqSendToDevice{Messages: make(map[id.UserID]map[id.DeviceID]*event.Content)}
 	for userID, sessions := range olmSessions {
 		if len(sessions) == 0 {
 			continue

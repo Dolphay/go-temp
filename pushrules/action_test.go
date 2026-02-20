@@ -11,7 +11,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"maunium.net/go/mautrix/pushrules"
+	"github.com/Dolphay/mautrix_tmp/pushrules"
 )
 
 func TestPushActionArray_Should_EmptyArrayReturnsDefaults(t *testing.T) {

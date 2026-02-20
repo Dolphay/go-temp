@@ -16,8 +16,8 @@ import (
 
 	"go.mau.fi/util/jsontime"
 
-	"maunium.net/go/mautrix/crypto/canonicaljson"
-	"maunium.net/go/mautrix/id"
+	"github.com/Dolphay/mautrix_tmp/crypto/canonicaljson"
+	"github.com/Dolphay/mautrix_tmp/id"
 )
 
 // SigningKey is a Matrix federation signing key pair.

@@ -323,7 +323,7 @@
     to trust the first cross-signing master key seen and require all devices
     to be signed by that key.
   * Trust state of incoming messages is automatically resolved and stored in
-    `evt.Mautrix.TrustState`. This can be used to reject incoming messages from
+    `evt.mautrix_tmp.TrustState`. This can be used to reject incoming messages from
     untrusted devices.
 
 [@nightmared]: https://github.com/nightmared
@@ -662,7 +662,7 @@
 
 ## v0.8.6 (2021-03-02)
 
-* Added client-side timeout to `mautrix.Client`'s `http.Client`
+* Added client-side timeout to `mautrix_tmp.Client`'s `http.Client`
   (defaults to 3 minutes).
 * Updated maulogger to fix bug where plaintext file logs wouldn't have newlines.
 

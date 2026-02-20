@@ -21,10 +21,10 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/rs/zerolog"
 
-	"maunium.net/go/mautrix"
-	"maunium.net/go/mautrix/crypto/cryptohelper"
-	"maunium.net/go/mautrix/event"
-	"maunium.net/go/mautrix/id"
+	"github.com/Dolphay/mautrix_tmp"
+	"github.com/Dolphay/mautrix_tmp/crypto/cryptohelper"
+	"github.com/Dolphay/mautrix_tmp/event"
+	"github.com/Dolphay/mautrix_tmp/id"
 )
 
 var homeserver = flag.String("homeserver", "", "Matrix homeserver")
@@ -41,7 +41,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	client, err := mautrix.NewClient(*homeserver, "", "")
+	client, err := mautrix_tmp.NewClient(*homeserver, "", "")
 	if err != nil {
 		panic(err)
 	}
@@ -61,8 +61,8 @@ func main() {
 
 	var lastRoomID id.RoomID
 
-	syncer := client.Syncer.(*mautrix.DefaultSyncer)
-	syncer.OnEventType(event.EventMessage, func(source mautrix.EventSource, evt *event.Event) {
+	syncer := client.Syncer.(*mautrix_tmp.DefaultSyncer)
+	syncer.OnEventType(event.EventMessage, func(source mautrix_tmp.EventSource, evt *event.Event) {
 		lastRoomID = evt.RoomID
 		rl.SetPrompt(fmt.Sprintf("%s> ", lastRoomID))
 		log.Info().
@@ -72,7 +72,7 @@ func main() {
 			Str("body", evt.Content.AsMessage().Body).
 			Msg("Received message")
 	})
-	syncer.OnEventType(event.StateMember, func(source mautrix.EventSource, evt *event.Event) {
+	syncer.OnEventType(event.StateMember, func(source mautrix_tmp.EventSource, evt *event.Event) {
 		if evt.GetStateKey() == client.UserID.String() && evt.Content.AsMember().Membership == event.MembershipInvite {
 			_, err := client.JoinRoomByID(evt.RoomID)
 			if err == nil {
@@ -101,9 +101,9 @@ func main() {
 	//client.DeviceID = "..."
 	//client.AccessToken = "..."
 	// You don't need to set a device ID in LoginAs because the crypto helper will set it for you if necessary.
-	cryptoHelper.LoginAs = &mautrix.ReqLogin{
-		Type:       mautrix.AuthTypePassword,
-		Identifier: mautrix.UserIdentifier{Type: mautrix.IdentifierTypeUser, User: *username},
+	cryptoHelper.LoginAs = &mautrix_tmp.ReqLogin{
+		Type:       mautrix_tmp.AuthTypePassword,
+		Identifier: mautrix_tmp.UserIdentifier{Type: mautrix_tmp.IdentifierTypeUser, User: *username},
 		Password:   *password,
 	}
 	// If you want to use multiple clients with the same DB, you should set a distinct database account ID for each one.

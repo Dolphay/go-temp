@@ -16,15 +16,15 @@ import (
 	"github.com/rs/zerolog"
 	"go.mau.fi/util/dbutil"
 
-	"maunium.net/go/mautrix"
-	"maunium.net/go/mautrix/crypto"
-	"maunium.net/go/mautrix/event"
-	"maunium.net/go/mautrix/id"
-	"maunium.net/go/mautrix/sqlstatestore"
+	"github.com/Dolphay/mautrix_tmp"
+	"github.com/Dolphay/mautrix_tmp/crypto"
+	"github.com/Dolphay/mautrix_tmp/event"
+	"github.com/Dolphay/mautrix_tmp/id"
+	"github.com/Dolphay/mautrix_tmp/sqlstatestore"
 )
 
 type CryptoHelper struct {
-	client    *mautrix.Client
+	client    *mautrix_tmp.Client
 	mach      *crypto.OlmMachine
 	log       zerolog.Logger
 	lock      sync.RWMutex
@@ -36,12 +36,12 @@ type CryptoHelper struct {
 
 	DecryptErrorCallback func(*event.Event, error)
 
-	LoginAs *mautrix.ReqLogin
+	LoginAs *mautrix_tmp.ReqLogin
 
 	DBAccountID string
 }
 
-var _ mautrix.CryptoHelper = (*CryptoHelper)(nil)
+var _ mautrix_tmp.CryptoHelper = (*CryptoHelper)(nil)
 
 // NewCryptoHelper creates a struct that helps a mautrix client struct with Matrix e2ee operations.
 //
@@ -53,11 +53,11 @@ var _ mautrix.CryptoHelper = (*CryptoHelper)(nil)
 // The same database may be shared across multiple clients, but note that doing that will allow all clients access to
 // decryption keys received by any one of the clients. For that reason, the pickle key must also be same for all clients
 // using the same database.
-func NewCryptoHelper(cli *mautrix.Client, pickleKey []byte, store any) (*CryptoHelper, error) {
+func NewCryptoHelper(cli *mautrix_tmp.Client, pickleKey []byte, store any) (*CryptoHelper, error) {
 	if len(pickleKey) == 0 {
 		return nil, fmt.Errorf("pickle key must be provided")
 	}
-	_, isExtensible := cli.Syncer.(mautrix.ExtensibleSyncer)
+	_, isExtensible := cli.Syncer.(mautrix_tmp.ExtensibleSyncer)
 	if !cli.SetAppServiceDeviceID && !isExtensible {
 		return nil, fmt.Errorf("the client syncer must implement ExtensibleSyncer")
 	}
@@ -109,7 +109,7 @@ func (helper *CryptoHelper) Init() error {
 	if helper == nil {
 		return fmt.Errorf("crypto helper is nil")
 	}
-	syncer, ok := helper.client.Syncer.(mautrix.ExtensibleSyncer)
+	syncer, ok := helper.client.Syncer.(mautrix_tmp.ExtensibleSyncer)
 	if !ok {
 		return fmt.Errorf("the client syncer must implement ExtensibleSyncer")
 	}
@@ -129,7 +129,7 @@ func (helper *CryptoHelper) Init() error {
 		managedCryptoStore := crypto.NewSQLCryptoStore(helper.dbForManagedStores, dbutil.ZeroLogger(helper.log.With().Str("db_section", "crypto").Logger()), helper.DBAccountID, helper.client.DeviceID, helper.pickleKey)
 		if helper.client.Store == nil {
 			helper.client.Store = managedCryptoStore
-		} else if _, isMemory := helper.client.Store.(*mautrix.MemorySyncStore); isMemory {
+		} else if _, isMemory := helper.client.Store.(*mautrix_tmp.MemorySyncStore); isMemory {
 			helper.client.Store = managedCryptoStore
 		}
 		err := managedCryptoStore.DB.Upgrade()
@@ -176,7 +176,7 @@ func (helper *CryptoHelper) Init() error {
 
 	syncer.OnSync(helper.mach.ProcessSyncResponse)
 	syncer.OnEventType(event.StateMember, helper.mach.HandleMemberEvent)
-	if _, ok = helper.client.Syncer.(mautrix.DispatchableSyncer); ok {
+	if _, ok = helper.client.Syncer.(mautrix_tmp.DispatchableSyncer); ok {
 		syncer.OnEventType(event.EventEncrypted, helper.HandleEncrypted)
 	} else {
 		helper.log.Warn().Msg("Client syncer does not implement DispatchableSyncer. Events will not be decrypted automatically.")
@@ -206,8 +206,8 @@ func (helper *CryptoHelper) Machine() *crypto.OlmMachine {
 
 func (helper *CryptoHelper) verifyDeviceKeysOnServer() error {
 	helper.log.Debug().Msg("Making sure our device has the expected keys on the server")
-	resp, err := helper.client.QueryKeys(&mautrix.ReqQueryKeys{
-		DeviceKeys: map[id.UserID]mautrix.DeviceIDList{
+	resp, err := helper.client.QueryKeys(&mautrix_tmp.ReqQueryKeys{
+		DeviceKeys: map[id.UserID]mautrix_tmp.DeviceIDList{
 			helper.client.UserID: {helper.client.DeviceID},
 		},
 	})
@@ -242,7 +242,7 @@ var NoSessionFound = crypto.NoSessionFound
 const initialSessionWaitTimeout = 3 * time.Second
 const extendedSessionWaitTimeout = 22 * time.Second
 
-func (helper *CryptoHelper) HandleEncrypted(src mautrix.EventSource, evt *event.Event) {
+func (helper *CryptoHelper) HandleEncrypted(src mautrix_tmp.EventSource, evt *event.Event) {
 	if helper == nil {
 		return
 	}
@@ -274,8 +274,8 @@ func (helper *CryptoHelper) HandleEncrypted(src mautrix.EventSource, evt *event.
 	helper.postDecrypt(src, decrypted)
 }
 
-func (helper *CryptoHelper) postDecrypt(src mautrix.EventSource, decrypted *event.Event) {
-	helper.client.Syncer.(mautrix.DispatchableSyncer).Dispatch(src|mautrix.EventSourceDecrypted, decrypted)
+func (helper *CryptoHelper) postDecrypt(src mautrix_tmp.EventSource, decrypted *event.Event) {
+	helper.client.Syncer.(mautrix_tmp.DispatchableSyncer).Dispatch(src|mautrix_tmp.EventSourceDecrypted, decrypted)
 }
 
 func (helper *CryptoHelper) RequestSession(roomID id.RoomID, senderKey id.SenderKey, sessionID id.SessionID, userID id.UserID, deviceID id.DeviceID) {
@@ -305,7 +305,7 @@ func (helper *CryptoHelper) RequestSession(roomID id.RoomID, senderKey id.Sender
 	}
 }
 
-func (helper *CryptoHelper) waitLongerForSession(log zerolog.Logger, src mautrix.EventSource, evt *event.Event) {
+func (helper *CryptoHelper) waitLongerForSession(log zerolog.Logger, src mautrix_tmp.EventSource, evt *event.Event) {
 	content := evt.Content.AsEncrypted()
 	log.Debug().Int("wait_seconds", int(extendedSessionWaitTimeout.Seconds())).Msg("Couldn't find session, requesting keys and waiting longer...")
 

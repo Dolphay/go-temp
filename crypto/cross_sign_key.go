@@ -10,9 +10,9 @@ package crypto
 import (
 	"fmt"
 
-	"maunium.net/go/mautrix"
-	"maunium.net/go/mautrix/crypto/olm"
-	"maunium.net/go/mautrix/id"
+	"github.com/Dolphay/mautrix_tmp"
+	"github.com/Dolphay/mautrix_tmp/crypto/olm"
+	"github.com/Dolphay/mautrix_tmp/id"
 )
 
 // CrossSigningKeysCache holds the three cross-signing keys for the current user.
@@ -89,10 +89,10 @@ func (mach *OlmMachine) GenerateCrossSigningKeys() (*CrossSigningKeysCache, erro
 }
 
 // PublishCrossSigningKeys signs and uploads the public keys of the given cross-signing keys to the server.
-func (mach *OlmMachine) PublishCrossSigningKeys(keys *CrossSigningKeysCache, uiaCallback mautrix.UIACallback) error {
+func (mach *OlmMachine) PublishCrossSigningKeys(keys *CrossSigningKeysCache, uiaCallback mautrix_tmp.UIACallback) error {
 	userID := mach.Client.UserID
 	masterKeyID := id.NewKeyID(id.KeyAlgorithmEd25519, keys.MasterKey.PublicKey.String())
-	masterKey := mautrix.CrossSigningKeys{
+	masterKey := mautrix_tmp.CrossSigningKeys{
 		UserID: userID,
 		Usage:  []id.CrossSigningUsage{id.XSUsageMaster},
 		Keys: map[id.KeyID]id.Ed25519{
@@ -100,7 +100,7 @@ func (mach *OlmMachine) PublishCrossSigningKeys(keys *CrossSigningKeysCache, uia
 		},
 	}
 
-	selfKey := mautrix.CrossSigningKeys{
+	selfKey := mautrix_tmp.CrossSigningKeys{
 		UserID: userID,
 		Usage:  []id.CrossSigningUsage{id.XSUsageSelfSigning},
 		Keys: map[id.KeyID]id.Ed25519{
@@ -117,7 +117,7 @@ func (mach *OlmMachine) PublishCrossSigningKeys(keys *CrossSigningKeysCache, uia
 		},
 	}
 
-	userKey := mautrix.CrossSigningKeys{
+	userKey := mautrix_tmp.CrossSigningKeys{
 		UserID: userID,
 		Usage:  []id.CrossSigningUsage{id.XSUsageUserSigning},
 		Keys: map[id.KeyID]id.Ed25519{
@@ -134,7 +134,7 @@ func (mach *OlmMachine) PublishCrossSigningKeys(keys *CrossSigningKeysCache, uia
 		},
 	}
 
-	err = mach.Client.UploadCrossSigningKeys(&mautrix.UploadCrossSigningKeysReq{
+	err = mach.Client.UploadCrossSigningKeys(&mautrix_tmp.UploadCrossSigningKeysReq{
 		Master:      masterKey,
 		SelfSigning: selfKey,
 		UserSigning: userKey,

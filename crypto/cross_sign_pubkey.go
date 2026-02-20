@@ -9,8 +9,8 @@ package crypto
 import (
 	"fmt"
 
-	"maunium.net/go/mautrix"
-	"maunium.net/go/mautrix/id"
+	"github.com/Dolphay/mautrix_tmp"
+	"github.com/Dolphay/mautrix_tmp/id"
 )
 
 type CrossSigningPublicKeysCache struct {
@@ -58,9 +58,9 @@ func (mach *OlmMachine) GetCrossSigningPublicKeys(userID id.UserID) (*CrossSigni
 		}
 	}
 
-	keys, err := mach.Client.QueryKeys(&mautrix.ReqQueryKeys{
-		DeviceKeys: mautrix.DeviceKeysRequest{
-			userID: mautrix.DeviceIDList{},
+	keys, err := mach.Client.QueryKeys(&mautrix_tmp.ReqQueryKeys{
+		DeviceKeys: mautrix_tmp.DeviceKeysRequest{
+			userID: mautrix_tmp.DeviceIDList{},
 		},
 	})
 	if err != nil {

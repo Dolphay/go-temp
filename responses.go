@@ -1,4 +1,4 @@
-package mautrix
+package mautrix_tmp
 
 import (
 	"bytes"
@@ -12,8 +12,8 @@ import (
 	"github.com/tidwall/sjson"
 	"go.mau.fi/util/jsontime"
 
-	"maunium.net/go/mautrix/event"
-	"maunium.net/go/mautrix/id"
+	"github.com/Dolphay/mautrix_tmp/event"
+	"github.com/Dolphay/mautrix_tmp/id"
 )
 
 // RespWhoami is the JSON response for https://spec.matrix.org/v1.2/client-server-api/#get_matrixclientv3accountwhoami

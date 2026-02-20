@@ -1,4 +1,4 @@
-module github.com/Dolphay/go-temp
+module github.com/Dolphay/mautrix_tmp
 
 go 1.20
 

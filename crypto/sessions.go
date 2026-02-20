@@ -10,10 +10,10 @@ import (
 	"errors"
 	"time"
 
-	"maunium.net/go/mautrix/crypto/olm"
-	"maunium.net/go/mautrix/event"
+	"github.com/Dolphay/mautrix_tmp/crypto/olm"
+	"github.com/Dolphay/mautrix_tmp/event"
 
-	"maunium.net/go/mautrix/id"
+	"github.com/Dolphay/mautrix_tmp/id"
 )
 
 var (

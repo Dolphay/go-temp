@@ -15,9 +15,9 @@ import (
 
 	"github.com/rs/zerolog"
 
-	"maunium.net/go/mautrix/crypto/olm"
-	"maunium.net/go/mautrix/event"
-	"maunium.net/go/mautrix/id"
+	"github.com/Dolphay/mautrix_tmp/crypto/olm"
+	"github.com/Dolphay/mautrix_tmp/event"
+	"github.com/Dolphay/mautrix_tmp/id"
 )
 
 var (
@@ -148,7 +148,7 @@ func (mach *OlmMachine) DecryptMegolmEvent(ctx context.Context, evt *event.Event
 			TrustSource:   device,
 			ForwardedKeys: forwardedKeys,
 			WasEncrypted:  true,
-			ReceivedAt:    evt.Mautrix.ReceivedAt,
+			ReceivedAt:    evt.mautrix_tmp.ReceivedAt,
 		},
 	}, nil
 }

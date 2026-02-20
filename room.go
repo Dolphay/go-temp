@@ -1,8 +1,8 @@
-package mautrix
+package mautrix_tmp
 
 import (
-	"maunium.net/go/mautrix/event"
-	"maunium.net/go/mautrix/id"
+	"github.com/Dolphay/mautrix_tmp/event"
+	"github.com/Dolphay/mautrix_tmp/id"
 )
 
 type RoomStateMap = map[event.Type]map[string]*event.Event

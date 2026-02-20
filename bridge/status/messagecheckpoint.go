@@ -16,9 +16,9 @@ import (
 
 	"go.mau.fi/util/jsontime"
 
-	"maunium.net/go/mautrix"
-	"maunium.net/go/mautrix/event"
-	"maunium.net/go/mautrix/id"
+	"github.com/Dolphay/mautrix_tmp"
+	"github.com/Dolphay/mautrix_tmp/event"
+	"github.com/Dolphay/mautrix_tmp/id"
 )
 
 type MessageCheckpointStep string
@@ -183,12 +183,12 @@ func (cj *CheckpointsJSON) SendHTTP(endpoint string, token string) error {
 	}
 
 	req.Header.Set("Authorization", "Bearer "+token)
-	req.Header.Set("User-Agent", mautrix.DefaultUserAgent+" (checkpoint sender)")
+	req.Header.Set("User-Agent", mautrix_tmp.DefaultUserAgent+" (checkpoint sender)")
 	req.Header.Set("Content-Type", "application/json")
 
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
-		return mautrix.HTTPError{
+		return mautrix_tmp.HTTPError{
 			Request:  req,
 			Response: resp,
 
@@ -198,7 +198,7 @@ func (cj *CheckpointsJSON) SendHTTP(endpoint string, token string) error {
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode < 200 || resp.StatusCode > 299 {
-		return mautrix.HTTPError{
+		return mautrix_tmp.HTTPError{
 			Request:  req,
 			Response: resp,
 

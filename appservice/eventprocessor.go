@@ -13,8 +13,8 @@ import (
 
 	"github.com/rs/zerolog"
 
-	"maunium.net/go/mautrix"
-	"maunium.net/go/mautrix/event"
+	"github.com/Dolphay/mautrix_tmp"
+	"github.com/Dolphay/mautrix_tmp/event"
 )
 
 type ExecMode uint8
@@ -26,8 +26,8 @@ const (
 )
 
 type EventHandler = func(evt *event.Event)
-type OTKHandler = func(otk *mautrix.OTKCount)
-type DeviceListHandler = func(lists *mautrix.DeviceLists, since string)
+type OTKHandler = func(otk *mautrix_tmp.OTKCount)
+type DeviceListHandler = func(lists *mautrix_tmp.DeviceLists, since string)
 
 type EventProcessor struct {
 	ExecMode ExecMode
@@ -102,23 +102,23 @@ func (ep *EventProcessor) callHandler(handler EventHandler, evt *event.Event) {
 	handler(evt)
 }
 
-func (ep *EventProcessor) callOTKHandler(handler OTKHandler, otk *mautrix.OTKCount) {
+func (ep *EventProcessor) callOTKHandler(handler OTKHandler, otk *mautrix_tmp.OTKCount) {
 	defer ep.recoverFunc(otk)
 	handler(otk)
 }
 
-func (ep *EventProcessor) callDeviceListHandler(handler DeviceListHandler, dl *mautrix.DeviceLists) {
+func (ep *EventProcessor) callDeviceListHandler(handler DeviceListHandler, dl *mautrix_tmp.DeviceLists) {
 	defer ep.recoverFunc(dl)
 	handler(dl, "")
 }
 
-func (ep *EventProcessor) DispatchOTK(otk *mautrix.OTKCount) {
+func (ep *EventProcessor) DispatchOTK(otk *mautrix_tmp.OTKCount) {
 	for _, handler := range ep.otkHandlers {
 		go ep.callOTKHandler(handler, otk)
 	}
 }
 
-func (ep *EventProcessor) DispatchDeviceList(dl *mautrix.DeviceLists) {
+func (ep *EventProcessor) DispatchDeviceList(dl *mautrix_tmp.DeviceLists) {
 	for _, handler := range ep.deviceListHandlers {
 		go ep.callDeviceListHandler(handler, dl)
 	}

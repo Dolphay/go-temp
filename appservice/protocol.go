@@ -14,12 +14,12 @@ import (
 
 	"github.com/rs/zerolog"
 
-	"maunium.net/go/mautrix"
-	"maunium.net/go/mautrix/event"
-	"maunium.net/go/mautrix/id"
+	"github.com/Dolphay/mautrix_tmp"
+	"github.com/Dolphay/mautrix_tmp/event"
+	"github.com/Dolphay/mautrix_tmp/id"
 )
 
-type OTKCountMap = map[id.UserID]map[id.DeviceID]mautrix.OTKCount
+type OTKCountMap = map[id.UserID]map[id.DeviceID]mautrix_tmp.OTKCount
 type FallbackKeyMap = map[id.UserID]map[id.DeviceID][]id.KeyAlgorithm
 
 // Transaction contains a list of events.
@@ -28,15 +28,15 @@ type Transaction struct {
 	EphemeralEvents []*event.Event `json:"ephemeral,omitempty"`
 	ToDeviceEvents  []*event.Event `json:"to_device,omitempty"`
 
-	DeviceLists    *mautrix.DeviceLists `json:"device_lists,omitempty"`
-	DeviceOTKCount OTKCountMap          `json:"device_one_time_keys_count,omitempty"`
-	FallbackKeys   FallbackKeyMap       `json:"device_unused_fallback_key_types,omitempty"`
+	DeviceLists    *mautrix_tmp.DeviceLists `json:"device_lists,omitempty"`
+	DeviceOTKCount OTKCountMap              `json:"device_one_time_keys_count,omitempty"`
+	FallbackKeys   FallbackKeyMap           `json:"device_unused_fallback_key_types,omitempty"`
 
-	MSC2409EphemeralEvents []*event.Event       `json:"de.sorunome.msc2409.ephemeral,omitempty"`
-	MSC2409ToDeviceEvents  []*event.Event       `json:"de.sorunome.msc2409.to_device,omitempty"`
-	MSC3202DeviceLists     *mautrix.DeviceLists `json:"org.matrix.msc3202.device_lists,omitempty"`
-	MSC3202DeviceOTKCount  OTKCountMap          `json:"org.matrix.msc3202.device_one_time_keys_count,omitempty"`
-	MSC3202FallbackKeys    FallbackKeyMap       `json:"org.matrix.msc3202.device_unused_fallback_key_types,omitempty"`
+	MSC2409EphemeralEvents []*event.Event           `json:"de.sorunome.msc2409.ephemeral,omitempty"`
+	MSC2409ToDeviceEvents  []*event.Event           `json:"de.sorunome.msc2409.to_device,omitempty"`
+	MSC3202DeviceLists     *mautrix_tmp.DeviceLists `json:"org.matrix.msc3202.device_lists,omitempty"`
+	MSC3202DeviceOTKCount  OTKCountMap              `json:"org.matrix.msc3202.device_one_time_keys_count,omitempty"`
+	MSC3202FallbackKeys    FallbackKeyMap           `json:"org.matrix.msc3202.device_unused_fallback_key_types,omitempty"`
 }
 
 func (txn *Transaction) MarshalZerologObject(ctx *zerolog.Event) {

@@ -12,8 +12,8 @@ import (
 
 	"github.com/tidwall/sjson"
 
-	"maunium.net/go/mautrix/crypto/canonicaljson"
-	"maunium.net/go/mautrix/id"
+	"github.com/Dolphay/mautrix_tmp/crypto/canonicaljson"
+	"github.com/Dolphay/mautrix_tmp/id"
 )
 
 // PkSigning stores a key pair for signing messages.

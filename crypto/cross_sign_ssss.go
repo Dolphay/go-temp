@@ -9,10 +9,10 @@ package crypto
 import (
 	"fmt"
 
-	"maunium.net/go/mautrix"
-	"maunium.net/go/mautrix/crypto/ssss"
-	"maunium.net/go/mautrix/crypto/utils"
-	"maunium.net/go/mautrix/event"
+	"github.com/Dolphay/mautrix_tmp"
+	"github.com/Dolphay/mautrix_tmp/crypto/ssss"
+	"github.com/Dolphay/mautrix_tmp/crypto/utils"
+	"github.com/Dolphay/mautrix_tmp/event"
 )
 
 // FetchCrossSigningKeysFromSSSS fetches all the cross-signing keys from SSSS, decrypts them using the given key and stores them in the olm machine.
@@ -82,10 +82,10 @@ func (mach *OlmMachine) GenerateAndUploadCrossSigningKeys(userPassword, passphra
 	}
 
 	// Publish cross-signing keys
-	err = mach.PublishCrossSigningKeys(keysCache, func(uiResp *mautrix.RespUserInteractive) interface{} {
-		return &mautrix.ReqUIAuthLogin{
-			BaseAuthData: mautrix.BaseAuthData{
-				Type:    mautrix.AuthTypePassword,
+	err = mach.PublishCrossSigningKeys(keysCache, func(uiResp *mautrix_tmp.RespUserInteractive) interface{} {
+		return &mautrix_tmp.ReqUIAuthLogin{
+			BaseAuthData: mautrix_tmp.BaseAuthData{
+				Type:    mautrix_tmp.AuthTypePassword,
 				Session: uiResp.Session,
 			},
 			User:     mach.Client.UserID.String(),

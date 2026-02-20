@@ -14,11 +14,11 @@ import (
 
 	"github.com/rs/zerolog"
 
-	"maunium.net/go/mautrix/crypto/olm"
-	"maunium.net/go/mautrix/id"
+	"github.com/Dolphay/mautrix_tmp/crypto/olm"
+	"github.com/Dolphay/mautrix_tmp/id"
 
-	"maunium.net/go/mautrix"
-	"maunium.net/go/mautrix/event"
+	"github.com/Dolphay/mautrix_tmp"
+	"github.com/Dolphay/mautrix_tmp/event"
 )
 
 type KeyShareRejection struct {
@@ -77,7 +77,7 @@ func (mach *OlmMachine) RequestRoomKey(ctx context.Context, toUser id.UserID, to
 			},
 		}
 
-		toDeviceCancel := &mautrix.ReqSendToDevice{
+		toDeviceCancel := &mautrix_tmp.ReqSendToDevice{
 			Messages: map[id.UserID]map[id.DeviceID]*event.Content{
 				toUser: {
 					toDevice: cancelEvtContent,
@@ -117,7 +117,7 @@ func (mach *OlmMachine) SendRoomKeyRequest(roomID id.RoomID, senderKey id.Sender
 		},
 	}
 
-	toDeviceReq := &mautrix.ReqSendToDevice{
+	toDeviceReq := &mautrix_tmp.ReqSendToDevice{
 		Messages: make(map[id.UserID]map[id.DeviceID]*event.Content, len(users)),
 	}
 	for user, devices := range users {

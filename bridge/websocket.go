@@ -9,7 +9,7 @@ import (
 
 	"go.mau.fi/util/jsontime"
 
-	"maunium.net/go/mautrix/appservice"
+	"github.com/Dolphay/mautrix_tmp/appservice"
 )
 
 const defaultReconnectBackoff = 2 * time.Second

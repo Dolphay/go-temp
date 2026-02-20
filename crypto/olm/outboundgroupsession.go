@@ -9,7 +9,7 @@ import (
 	"encoding/base64"
 	"unsafe"
 
-	"maunium.net/go/mautrix/id"
+	"github.com/Dolphay/mautrix_tmp/id"
 )
 
 // OutboundGroupSession stores an outbound encrypted messaging session for a
